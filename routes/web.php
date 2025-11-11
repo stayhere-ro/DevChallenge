@@ -18,7 +18,9 @@ use App\Http\Controllers\Admin\DashboardController;
 
 // Public booking routes
 Route::get('/', [BookingController::class, 'index'])->name('bookings.index');
-Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+Route::post('/bookings', [BookingController::class, 'store'])
+    ->middleware('throttle:bookings')
+    ->name('bookings.store');
 
 // Admin routes (protected by auth middleware)
 Route::prefix('admin')->middleware('auth')->group(function () {
@@ -26,9 +28,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 });
 
 // Authentication routes
-Auth::routes(['register' => false]); // Disable registration for security
-
-
-Auth::routes();
+// Disable registration for security; remove duplicate Auth::routes call
+Auth::routes(['register' => false]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

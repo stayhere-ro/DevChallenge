@@ -12,12 +12,26 @@ class Booking extends Model
     protected $fillable = [
         'name',
         'email',
-        'date',
-        'hour',
+        'scheduled_at',
     ];
 
     protected $casts = [
-        'date' => 'date',
-        'hour' => 'datetime:H:i',
+        'scheduled_at' => 'datetime',
     ];
+
+    /**
+     * Virtual accessor: $booking->date for views (derived from scheduled_at)
+     */
+    public function getDateAttribute()
+    {
+        return $this->scheduled_at ? $this->scheduled_at->copy() : null;
+    }
+
+    /**
+     * Virtual accessor: $booking->hour as HH:MM for views (derived from scheduled_at)
+     */
+    public function getHourAttribute()
+    {
+        return $this->scheduled_at ? $this->scheduled_at->format('H:i') : null;
+    }
 }

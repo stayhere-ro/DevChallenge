@@ -54,10 +54,9 @@ class BookingRequest extends FormRequest
                     $validator->errors()->add('hour', 'Bookings are only available between 8:00 AM and 5:00 PM.');
                 }
 
-                // Check if time slot is already booked
-                $exists = Booking::where('date', $date)
-                    ->where('hour', $hour . ':00')
-                    ->exists();
+                // Combine into scheduled_at and check if the time slot is already booked
+                $scheduledAt = Carbon::parse($date . ' ' . $hour . ':00');
+                $exists = Booking::where('scheduled_at', $scheduledAt)->exists();
 
                 if ($exists) {
                     $validator->errors()->add('hour', 'This time slot is already booked. Please choose another time.');

@@ -8,6 +8,14 @@
                 <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">
+                    <div class="alert alert-secondary d-flex align-items-center justify-content-between" role="alert">
+                        <div>
+                            <strong>Demo credentials:</strong>
+                            <div>Email: <code>hairdresser@example.com</code></div>
+                            <div>Password: <code>password</code></div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-auto-login>Auto login</button>
+                    </div>
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
@@ -65,6 +73,22 @@
                             </div>
                         </div>
                     </form>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            var btn = document.querySelector('[data-auto-login]');
+                            if (!btn) return;
+                            btn.addEventListener('click', function () {
+                                var email = document.getElementById('email');
+                                var password = document.getElementById('password');
+                                var remember = document.getElementById('remember');
+                                if (email) email.value = 'hairdresser@example.com';
+                                if (password) password.value = 'password';
+                                if (remember) remember.checked = true;
+                                var form = btn.closest('.card-body')?.querySelector('form') || document.querySelector('form[action="{{ route('login') }}"]');
+                                if (form) form.submit();
+                            });
+                        });
+                    </script>
                 </div>
             </div>
         </div>

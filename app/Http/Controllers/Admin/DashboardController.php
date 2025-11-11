@@ -20,8 +20,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $bookings = Booking::orderBy('date')
-            ->orderBy('hour')
+        $bookings = Booking::orderBy('scheduled_at')
             ->paginate(15);
 
         return view('admin.dashboard', compact('bookings'));
