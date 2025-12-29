@@ -17,10 +17,14 @@ use App\Http\Controllers\Admin\DashboardController;
 */
 
 // Public booking routes
-Route::get('/', [BookingController::class, 'index'])->name('bookings.index');
+Route::get('/', [BookingController::class, 'create'])->name('bookings.index');
+Route::get('/bookings', [BookingController::class, 'index']);
 Route::post('/bookings', [BookingController::class, 'store'])
     ->middleware('throttle:bookings')
     ->name('bookings.store');
+
+
+
 
 // Admin routes (protected by auth middleware)
 Route::prefix('admin')->middleware('auth')->group(function () {
