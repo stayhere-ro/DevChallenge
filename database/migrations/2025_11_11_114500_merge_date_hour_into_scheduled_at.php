@@ -24,7 +24,7 @@ return new class extends Migration
 
         // Add unique index to prevent double-booking for the same slot
         Schema::table('bookings', function (Blueprint $table) {
-            $table->unique('scheduled_at', 'bookings_scheduled_at_unique');
+            $table->unique(['hairdresser_id','scheduled_at'], 'bookings_hairdresser_scheduled_unique');
         });
 
         // Drop old columns

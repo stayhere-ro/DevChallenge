@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Hairdresser;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
@@ -15,7 +16,7 @@ class HairdresserSeeder extends Seeder
     public function run(): void
     {
         // Create a hairdresser user for admin access
-        User::updateOrCreate(
+        Hairdresser::updateOrCreate(
             ['email' => 'hairdresser@example.com'],
             [
                 'name' => 'Hairdresser Admin',
