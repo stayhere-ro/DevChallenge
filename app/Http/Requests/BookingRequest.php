@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 use App\Models\Booking;
+use App\Models\User;
 use Carbon\Carbon;
 
 class BookingRequest extends FormRequest
@@ -56,7 +57,10 @@ class BookingRequest extends FormRequest
 
                 // Combine into scheduled_at and check if the time slot is already booked
                 $scheduledAt = Carbon::parse($date . ' ' . $hour . ':00');
-                $exists = Booking::where('scheduled_at', $scheduledAt)->exists();
+                $hairdresserId = User::where('email', 'hairdresser@example.com')->value('id');
+                $exists = Booking::where('hairdresser_id', $hairdresserId)
+                    ->where('scheduled_at', $scheduledAt)
+                    ->exists();
 
                 if ($exists) {
                     $validator->errors()->add('hour', 'This time slot is already booked. Please choose another time.');
