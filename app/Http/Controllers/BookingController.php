@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\BookingConfirmedClient;
+use App\Mail\NewBookingHairdresser;
 use App\Models\Booking;
 use App\Http\Requests\BookingRequest;
 use App\Models\Hairdresser;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
@@ -51,6 +54,9 @@ class BookingController extends Controller
 
 //        return redirect()->route('bookings.index')
 //            ->with('success', 'Booking confirmed! We look forward to seeing you.');
+
+        Mail::to($booking->hairdresser->email)->send(new NewBookingHairdresser($booking));
+        Mail::to($booking->email)->send(new BookingConfirmedClient($booking));
 
         return response()->json([
             'message' => 'Booking confirmed! We look forward to seeing you.',
