@@ -25,6 +25,7 @@ class Booking extends Model
     protected $fillable = [
         'name',
         'email',
+        'hairdresser_id',
         'scheduled_at',
     ];
 

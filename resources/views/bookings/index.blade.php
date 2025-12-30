@@ -55,6 +55,26 @@
                             @enderror
                         </div>
 
+                        <div class="mb-3">
+                            <label for="hairdresser_id" class="form-label">Select Hairdresser <span class="text-danger">*</span></label>
+                            <select class="form-select @error('hairdresser_id') is-invalid @enderror"
+                                    id="hairdresser_id"
+                                    name="hairdresser_id"
+                                    required>
+                                <option value="">Choose a professional...</option>
+                                @foreach($hairdressers as $hairdresser)
+                                    <option value="{{ $hairdresser->id }}" {{ old('hairdresser_id') == $hairdresser->id ? 'selected' : '' }}>
+                                        {{ $hairdresser->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('hairdresser_id')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="date" class="form-label">Date <span class="text-danger">*</span></label>

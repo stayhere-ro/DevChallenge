@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Http\Requests\BookingRequest;
+use App\Models\Hairdresser;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -41,18 +42,26 @@ class BookingController extends Controller
 
         $scheduledAt = Carbon::parse($data['date'] . ' ' . $data['hour'] . ':00');
 
-        Booking::create([
+        $booking = Booking::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'hairdresser_id' => $data['hairdresser_id'],
             'scheduled_at' => $scheduledAt,
         ]);
 
-        return redirect()->route('bookings.index')
-            ->with('success', 'Booking confirmed! We look forward to seeing you.');
+//        return redirect()->route('bookings.index')
+//            ->with('success', 'Booking confirmed! We look forward to seeing you.');
+
+        return response()->json([
+            'message' => 'Booking confirmed! We look forward to seeing you.',
+            'booking' => $booking
+        ], 201);
     }
 
     public function create()
     {
-        return view('bookings.index');
+        $hairdressers = Hairdresser::all();
+
+        return view('bookings.index', compact('hairdressers'));
     }
 }
