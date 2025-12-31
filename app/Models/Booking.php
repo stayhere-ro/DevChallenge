@@ -26,6 +26,7 @@ class Booking extends Model
         'name',
         'email',
         'hairdresser_id',
+        'user_id',
         'scheduled_at',
     ];
 

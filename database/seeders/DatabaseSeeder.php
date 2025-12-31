@@ -17,16 +17,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create a hairdresser user for admin access
-        Hairdresser::factory()->create([
-            'name' => 'Hairdresser Admin',
-            'email' => 'hairdresser@example.com',
+        // Create a User
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'testuser@example.com',
             'password' => Hash::make('password'),
         ]);
 
         Hairdresser::factory(5)->create();
 
-        User::factory(15)->create();
+        User::factory(5)->create();
 
         Booking::factory(12)->create();
     }

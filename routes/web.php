@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\UserBookingController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BookingController;
@@ -24,15 +26,17 @@ Route::post('/bookings', [BookingController::class, 'store'])
     ->name('bookings.store');
 
 
-
+// Logged-in user booking routes
+Route::get('/my-bookings', [UserBookingController::class, 'index'])->middleware('auth');
+Route::get('/new-booking', [UserBookingController::class, 'create'])->middleware('auth');
+Route::post('/new-booking', [UserBookingController::class, 'store'])->middleware('auth');
 
 // Admin routes (protected by auth middleware)
-Route::prefix('admin')->middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-});
+//Route::prefix('admin')->middleware('auth')->group(function () {
+//    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+//});
 
 // Authentication routes
-// Disable registration for security; remove duplicate Auth::routes call
-Auth::routes(['register' => false]);
+Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
