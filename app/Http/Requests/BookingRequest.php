@@ -51,17 +51,27 @@ class BookingRequest extends FormRequest
 
                 // Check business hours (8:00 AM - 5:00 PM)
                 $hourTime = Carbon::createFromFormat('H:i', $hour);
+                if ((int) $hourTime->format('i') !== 0) {
+                    $validator->errors()->add('hour', 'Bookings must start exactly on the hour (e.g., 10:00).');
+                }
+
                 if ($hourTime->hour < 8 || $hourTime->hour >= 17) {
                     $validator->errors()->add('hour', 'Bookings are only available between 8:00 AM and 5:00 PM.');
                 }
 
-                // Combine into scheduled_at and check if the time slot is already booked
+                // Combine into scheduled_at and check if
                 $scheduledAt = Carbon::parse($date . ' ' . $hour . ':00');
+                // the time slot is in the past for a valid date
+                if ($scheduledAt->lte(now())) {
+                    $validator->errors()->add('hour', 'Please choose a time slot in the future.');
+                    return;
+                }
+
+                // the time slot is already booked
                 $hairdresserId = User::where('email', 'hairdresser@example.com')->value('id');
                 $exists = Booking::where('hairdresser_id', $hairdresserId)
                     ->where('scheduled_at', $scheduledAt)
                     ->exists();
-
                 if ($exists) {
                     $validator->errors()->add('hour', 'This time slot is already booked. Please choose another time.');
                 }
