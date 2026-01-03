@@ -35,7 +35,7 @@
                                         <tr>
                                             <td>{{ $booking->id }}</td>
                                             <td>
-                                                <strong>{{ $booking->name }}</strong>
+                                                <strong>{{ $booking->name ?: '(not provided)' }}</strong>
                                             </td>
                                             <td>
                                                 <a href="mailto:{{ $booking->email }}">{{ $booking->email }}</a>
