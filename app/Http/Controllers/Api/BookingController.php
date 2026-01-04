@@ -6,9 +6,45 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreBookingRequest;
 use App\Models\Booking;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
 {
+    /**
+     * List all bookings for a given email.
+     */
+    public function index(Request $request)
+    {
+        $validator = Validator::make($request->query(), [
+            'email' => ['required', 'email'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $email = $validator->validated()['email'];
+
+        $bookings = Booking::query()
+            ->where('email', $email)
+            ->orderBy('scheduled_at')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $bookings->map(fn ($booking) => [
+                'id' => $booking->id,
+                'hairdresser_id' => $booking->hairdresser_id,
+                'date' => $booking->scheduled_at->toDateString(),
+                'time' => $booking->scheduled_at->format('H:i'),
+            ]),
+        ]);
+    }
+
     /**
      * Store a new booking.
      */

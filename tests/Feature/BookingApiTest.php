@@ -170,4 +170,63 @@ class BookingApiTest extends TestCase
             ->assertJsonStructure(['success', 'message', 'errors'])
             ->assertJsonPath('errors.start_time.0', 'Bookings are only available between 08:00 and 17:00 (last start before 17:00).');
     }
+
+    /**
+     * Test listing bookings by email.
+     */
+    public function test_it_lists_bookings_by_email(): void
+    {
+        $email = 'client@example.com';
+        $hairdresser = User::factory()->create();
+
+        Booking::factory()->count(3)->create([
+            'email' => $email,
+            'hairdresser_id' => $hairdresser->id,
+        ]);
+
+        Booking::factory()->count(2)->create([
+            'email' => 'other@example.com',
+            'hairdresser_id' => $hairdresser->id,
+        ]);
+
+        $response = $this->getJson('/api/bookings?email=' . $email);
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonCount(3, 'data');
+    }
+
+    /**
+     * Test listing with invalid email.
+     */
+    public function test_it_returns_422_json_for_invalid_email_query_param(): void
+    {
+        $response = $this->getJson('/api/bookings?email=not-an-email');
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'message' => 'Validation failed',
+            ])
+            ->assertJsonStructure([
+                'message',
+                'errors' => ['email'],
+            ]);
+    }
+
+    /**
+     * Test listing with empty email.
+     */
+    public function test_it_returns_422_json_when_email_query_param_is_missing(): void
+    {
+        $response = $this->getJson('/api/bookings?email=');
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'message' => 'Validation failed',
+            ])
+            ->assertJsonStructure([
+                'message',
+                'errors' => ['email'],
+            ]);
+    }
 }
