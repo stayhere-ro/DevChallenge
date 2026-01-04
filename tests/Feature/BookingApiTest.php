@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Mail\BookingConfirmationMail;
+use App\Mail\NewBookingMail;
 use App\Models\Booking;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Mail;
 
 class BookingApiTest extends TestCase
 {
@@ -228,5 +231,55 @@ class BookingApiTest extends TestCase
                 'message',
                 'errors' => ['email'],
             ]);
+    }
+
+    /**
+     * Test emails notifications are sent from api.
+     */
+    public function test_api_store_sends_hairdresser_and_client_emails(): void
+    {
+        Mail::fake();
+
+        $hairdresser = User::factory()->create([
+            'email' => 'hairdresser@example.com',
+            'name' => 'Hair Dresser',
+        ]);
+
+        $payload = [
+            'client_email' => 'client@example.com',
+            'hairdresser_id' => $hairdresser->id,
+            'date' => now()->addDay()->toDateString(),
+            'start_time' => '10:00',
+        ];
+
+        $this->postJson('/api/bookings', $payload)->assertCreated();
+
+        Mail::assertSent(NewBookingMail::class, fn ($m) => $m->hasTo('hairdresser@example.com'));
+        Mail::assertSent(BookingConfirmationMail::class, fn ($m) => $m->hasTo('client@example.com'));
+    }
+
+    /**
+     * Test emails notifications are sent from web.
+     */
+    public function test_web_store_sends_hairdresser_and_client_emails(): void
+    {
+        Mail::fake();
+
+        User::factory()->create([
+            'email' => 'hairdresser@example.com',
+            'name' => 'Hair Dresser',
+        ]);
+
+        $payload = [
+            'name' => 'Client Name',
+            'email' => 'client@example.com',
+            'date' => now()->addDay()->toDateString(),
+            'hour' => '10:00',
+        ];
+
+        $this->post('/bookings', $payload)->assertRedirect();
+
+        Mail::assertSent(NewBookingMail::class, fn ($m) => $m->hasTo('hairdresser@example.com'));
+        Mail::assertSent(BookingConfirmationMail::class, fn ($m) => $m->hasTo('client@example.com'));
     }
 }

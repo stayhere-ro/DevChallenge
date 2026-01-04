@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreBookingRequest;
 use App\Models\Booking;
+use App\Services\BookingNotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -48,7 +49,7 @@ class BookingController extends Controller
     /**
      * Store a new booking.
      */
-    public function store(StoreBookingRequest $request)
+    public function store(StoreBookingRequest $request, BookingNotificationService $notifier)
     {
         $data = $request->validated();
 
@@ -64,6 +65,8 @@ class BookingController extends Controller
             'hairdresser_id' => (int) $data['hairdresser_id'],
             'scheduled_at' => $scheduledAt,
         ]);
+
+        $notifier->sendForNewBooking($booking);
 
         return response()->json([
             'success' => true,
