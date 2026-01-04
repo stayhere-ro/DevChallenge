@@ -24,8 +24,8 @@
                         <form method="POST" action="/new-booking">
                             @csrf
 
-                            <input type="hidden" name="name" value="{{ auth()->user()->name }}">
-                            <input type="hidden" name="email" value="{{ auth()->user()->email }}">
+                            <input type="hidden" name="name" value="{{ Auth::user()->name }}">
+                            <input type="hidden" name="email" value="{{ Auth::user()->email }}">
 
                             <div class="row mb-4">
                                 <div class="col-md-6">

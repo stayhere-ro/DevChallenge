@@ -1,11 +1,9 @@
 <?php
 
-use App\Http\Controllers\UserBookingController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Booking\BookingController;
+use App\Http\Controllers\Booking\UserBookingController;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\BookingController;
-use App\Http\Controllers\Admin\DashboardController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
