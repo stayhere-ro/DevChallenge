@@ -23,12 +23,11 @@ Route::post('/bookings', [BookingController::class, 'store'])
     ->name('bookings.store');
 
 // Admin routes (protected by auth middleware)
-Route::prefix('admin')->middleware('auth')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'role:hairdresser'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 });
 
 // Authentication routes
-// Disable registration for security; remove duplicate Auth::routes call
-Auth::routes(['register' => false]);
+Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

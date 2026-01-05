@@ -20,6 +20,7 @@ class HairdresserSeeder extends Seeder
             [
                 'name' => 'Hairdresser Admin',
                 'password' => Hash::make('password'),
+                'role' => 'hairdresser',
             ]
         );
 
@@ -29,6 +30,7 @@ class HairdresserSeeder extends Seeder
                 [
                     'name' => fake()->name(),
                     'password' => Hash::make('password'),
+                    'role' => 'hairdresser',
                 ]
             );
         }

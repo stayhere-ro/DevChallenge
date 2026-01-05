@@ -28,6 +28,20 @@ class LoginController extends Controller
     protected $redirectTo = '/home';
 
     /**
+     * Redirect users based on role after login.
+     */
+    protected function redirectTo(): string
+    {
+        $user = auth()->user();
+
+        if ($user && method_exists($user, 'isClient') && $user->isClient()) {
+            return route('bookings.index');
+        }
+
+        return $this->redirectTo;
+    }
+
+    /**
      * Create a new controller instance.
      *
      * @return void
