@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreBookingRequest;
 use App\Models\Booking;
 use App\Services\BookingNotificationService;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\DTO\CreateBookingData;
+use App\Exceptions\BookingValidationException;
+use App\Services\CreateBookingService;
 
 class BookingController extends Controller
 {
@@ -23,7 +25,8 @@ class BookingController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Validation failed',
+                'success' => false,
+                'message' => 'Validation failed.',
                 'errors' => $validator->errors(),
             ], 422);
         }
@@ -49,22 +52,23 @@ class BookingController extends Controller
     /**
      * Store a new booking.
      */
-    public function store(StoreBookingRequest $request, BookingNotificationService $notifier)
-    {
-        $data = $request->validated();
+    public function store(
+        StoreBookingRequest $request,
+        CreateBookingService $service,
+        BookingNotificationService $notifier
+    ) {
+        $timezone = config('app.timezone');
+        $dto = CreateBookingData::fromApi($request->validated(), $timezone);
 
-        $scheduledAt = Carbon::createFromFormat(
-            'Y-m-d H:i',
-            "{$data['date']} {$data['start_time']}",
-            config('app.timezone')
-        );
-
-        $booking = Booking::create([
-            'name' => null,
-            'email' => $data['client_email'],
-            'hairdresser_id' => $data['hairdresser_id'],
-            'scheduled_at' => $scheduledAt,
-        ]);
+        try {
+            $booking = $service->create($dto, $timezone);
+        } catch (BookingValidationException $error) {
+            return response()->json([
+                'success' => false,
+                'message' => $error->getMessage(),
+                'errors' => $error->errors,
+            ], 422);
+        }
 
         $notifier->sendForNewBooking($booking);
 

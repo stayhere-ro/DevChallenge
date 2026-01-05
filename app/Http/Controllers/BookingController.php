@@ -7,8 +7,10 @@ use App\Models\Booking;
 use App\Models\User;
 use App\Http\Requests\BookingRequest;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 use Illuminate\Validation\Rule;
+use App\DTO\CreateBookingData;
+use App\Exceptions\BookingValidationException;
+use App\Services\CreateBookingService;
 
 class BookingController extends Controller
 {
@@ -80,30 +82,34 @@ class BookingController extends Controller
     /**
      * Store a new booking.
      */
-    public function store(BookingRequest $request, BookingNotificationService $notifier)
-    {
-        if (auth()->check() && auth()->user()->isHairdresser()) {
-            abort(403);
-        }
-
-        $data = $request->validated();
-
-        $scheduledAt = Carbon::parse($data['date'] . ' ' . $data['hour'] . ':00');
-
-        $name = $data['name'];
-        $email = $data['email'];
+    public function store(
+        BookingRequest $request,
+        CreateBookingService $service,
+        BookingNotificationService $notifier
+    ) {
+        $validated = $request->validated();
 
         if (auth()->check() && auth()->user()->isClient()) {
-            $name = auth()->user()->name;
-            $email = auth()->user()->email;
+            $validated['name'] = auth()->user()->name;
+            $validated['email'] = auth()->user()->email;
         }
 
-        $booking = Booking::create([
-            'name' => $name,
-            'email' => $email,
-            'scheduled_at' => $scheduledAt,
-            'hairdresser_id' => $data['hairdresser_id'],
-        ]);
+        $timezone = config('app.timezone');
+        $dto = CreateBookingData::fromWeb($validated, $timezone);
+
+        try {
+            $booking = $service->create($dto, $timezone);
+        } catch (BookingValidationException $errorObject) {
+            $errors = $errorObject->errors;
+
+            if (isset($errors['start_time'])) {
+                $errors['hour'] = $errors['start_time'];
+                unset($errors['start_time']);
+            }
+
+            return redirect()->route('bookings.index')
+                ->withErrors($errors)->withInput();
+        }
 
         $notifier->sendForNewBooking($booking);
 
