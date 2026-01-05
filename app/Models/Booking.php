@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Booking extends Model
 {
@@ -34,5 +35,15 @@ class Booking extends Model
     public function getHourAttribute()
     {
         return $this->scheduled_at ? $this->scheduled_at->format('H:i') : null;
+    }
+
+    public function hairdresser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'hairdresser_id');
+    }
+
+    public function clientUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'email', 'email');
     }
 }

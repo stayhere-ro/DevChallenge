@@ -6,6 +6,7 @@ use App\Services\BookingNotificationService;
 use App\Models\Booking;
 use App\Models\User;
 use App\Http\Requests\BookingRequest;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class BookingController extends Controller
@@ -13,9 +14,39 @@ class BookingController extends Controller
     /**
      * Display the booking form.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('bookings.index');
+        if (auth()->check() && auth()->user()->isHairdresser()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        $myBookings = null;
+        $hairdressers = User::query()
+            ->where('role', 'hairdresser')
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        if (auth()->check() && auth()->user()->isClient()) {
+            $query = Booking::query()
+                ->where('email', auth()->user()->email)
+                ->orderByDesc('scheduled_at');
+
+            if ($request->filled('from')) {
+                $query->whereDate('scheduled_at', '>=', $request->query('from'));
+            }
+
+            if ($request->filled('to')) {
+                $query->whereDate('scheduled_at', '<=', $request->query('to'));
+            }
+
+            if ($request->filled('filter_hour')) {
+                $query->whereTime('scheduled_at', '=', $request->query('filter_hour'));
+            }
+
+            $myBookings = $query->paginate(perPage: 15);
+        }
+
+        return view('bookings.index', compact('myBookings', 'hairdressers'));
     }
 
     /**

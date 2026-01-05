@@ -133,13 +133,81 @@
                 </div>
             </div>
 
-            @auth
+            @if(auth()->check() && auth()->user()->isClient())
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">My Booking History</h5>
+                    </div>
+
+                    <div class="card-body">
+                        <form class="row g-2 mb-3 align-items-end" method="GET" action="{{ route('bookings.index') }}">
+
+                            <div class="col-md-4">
+                                <label for="from" class="form-label">From</label>
+                                <input type="date" id="from" name="from" value="{{ request('from') }}" class="form-control">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="to" class="form-label">To</label>
+                                <input type="date" id="to" name="to" value="{{ request('to') }}" class="form-control">
+                            </div>
+
+                            <div class="col-md-2">
+                                <label for="filter_hour" class="form-label">Hour</label>
+                                <select id="filter_hour" name="filter_hour" class="form-select">
+                                    <option value="">Any</option>
+                                    @for($i = 8; $i < 17; $i++)
+                                        @php $time = sprintf('%02d:00', $i); @endphp
+                                        <option value="{{ $time }}" @selected(request('filter_hour') === $time)>
+                                            {{ date('g:00 A', strtotime($time)) }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div>
+
+                            <div class="col-md-2 d-flex">
+                                <button class="btn btn-outline-primary w-100" type="submit">Filter</button>
+                            </div>
+                        </form>
+
+                        @if(!$myBookings || $myBookings->isEmpty())
+                            <div class="alert alert-info mb-0">No bookings yet.</div>
+                        @else
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($myBookings as $booking)
+                                            <tr>
+                                                <td>{{ $booking->id }}</td>
+                                                <td>{{ $booking->date?->format('M d, Y') ?? '—' }}</td>
+                                                <td>{{ $booking->hour ? date('g:i A', strtotime($booking->hour)) : '—' }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-3">
+                                {{ $myBookings->links() }}
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
+            {{-- @auth
                 <div class="mt-3 text-center">
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
                         View Admin Dashboard
                     </a>
                 </div>
-            @endauth
+            @endauth --}}
         </div>
     </div>
 </div>
