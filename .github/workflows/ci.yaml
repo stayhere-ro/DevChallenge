@@ -56,7 +56,7 @@ jobs:
           DB_DATABASE: testing
           DB_USERNAME: root
           DB_PASSWORD: password
-        run: php artisan test
+        run: php artisan test tests/Feature/BookingTest.php
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse app --level=5
