@@ -29,12 +29,19 @@ class BookingApiTest extends TestCase
         parent::tearDown();
     }
 
+    private function makeHairdresser(array $overrides = []): User
+    {
+        return User::factory()->create(array_merge([
+            'role' => 'hairdresser',
+        ], $overrides));
+    }
+
     /**
      * Test a successful booking.
      */
     public function test_it_creates_a_booking_successfully(): void
     {
-        $hairdresser = User::factory()->create();
+        $hairdresser = $this->makeHairdresser();
         $payload = [
             'client_email' => 'client@example.com',
             'hairdresser_id' => $hairdresser->id,
@@ -65,8 +72,8 @@ class BookingApiTest extends TestCase
      */
     public function test_it_allows_booking_the_same_time_slot_for_different_hairdressers(): void
     {
-        $hairdresserA = User::factory()->create();
-        $hairdresserB = User::factory()->create();
+        $hairdresserA = $this->makeHairdresser();
+        $hairdresserB = $this->makeHairdresser();
 
         // Create an existing booking for hairdresser A at 10:00
         Booking::create([
@@ -107,7 +114,7 @@ class BookingApiTest extends TestCase
      */
     public function test_it_rejects_a_conflicting_booking_for_same_hairdresser_and_time_slot(): void
     {
-        $hairdresser = User::factory()->create();
+        $hairdresser = $this->makeHairdresser();
 
         Booking::create([
             'name' => null,
@@ -139,7 +146,7 @@ class BookingApiTest extends TestCase
      */
     public function test_it_rejects_a_booking_during_the_weekend(): void
     {
-        $hairdresser = User::factory()->create();
+        $hairdresser = $this->makeHairdresser();
         $payload = [
             'client_email' => 'client@example.com',
             'hairdresser_id' => $hairdresser->id,
@@ -159,7 +166,7 @@ class BookingApiTest extends TestCase
      */
     public function test_it_rejects_a_booking_outside_business_hours(): void
     {
-        $hairdresser = User::factory()->create();
+        $hairdresser = $this->makeHairdresser();
         $payload = [
             'client_email' => 'client@example.com',
             'hairdresser_id' => $hairdresser->id,
@@ -180,7 +187,7 @@ class BookingApiTest extends TestCase
     public function test_it_lists_bookings_by_email(): void
     {
         $email = 'client@example.com';
-        $hairdresser = User::factory()->create();
+        $hairdresser = $this->makeHairdresser(['email' => 'hairdresser@example.com']);
 
         Booking::factory()->count(3)->create([
             'email' => $email,
@@ -243,6 +250,7 @@ class BookingApiTest extends TestCase
         $hairdresser = User::factory()->create([
             'email' => 'hairdresser@example.com',
             'name' => 'Hair Dresser',
+            'role' => 'hairdresser',
         ]);
 
         $payload = [
