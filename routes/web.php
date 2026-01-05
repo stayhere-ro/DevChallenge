@@ -18,6 +18,8 @@ use App\Http\Controllers\Admin\DashboardController;
 
 // Public booking routes
 Route::get('/', [BookingController::class, 'index'])->name('bookings.index');
+Route::get('/bookings/availability', [BookingController::class, 'availability'])
+    ->name('bookings.availability');
 Route::post('/bookings', [BookingController::class, 'store'])
     ->middleware('throttle:bookings')
     ->name('bookings.store');

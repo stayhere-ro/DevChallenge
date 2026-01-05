@@ -12,9 +12,26 @@
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker-bs5.min.css"/>
+    <style>
+        /* replace green with primary */
+        .datepicker .datepicker-cell.today:not(.selected),
+        .datepicker .datepicker-cell.today:hover:not(.selected) {
+            border-color: var(--bs-primary) !important;
+            background-color: rgba(var(--bs-primary-rgb), 0.15) !important;
+            color: var(--bs-primary) !important;
+        }
+
+        .datepicker .datepicker-cell.today.selected {
+            background-color: var(--bs-primary) !important;
+            border-color: var(--bs-primary) !important;
+            color: #fff !important;
+        }
+    </style>
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    @yield('scripts')
 </head>
 <body>
     <div id="app">

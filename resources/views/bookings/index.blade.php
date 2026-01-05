@@ -1,5 +1,10 @@
 @extends('layouts.app')
 
+@section('scripts')
+  <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/datepicker.min.js"></script>
+  <script src="{{ asset('js/bookings.js') }}"></script>
+@endsection
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
@@ -21,7 +26,7 @@
                         Schedule your hair appointment with us. We're open Monday to Friday, 8:00 AM - 5:00 PM.
                     </p>
 
-                    <form method="POST" action="{{ route('bookings.store') }}">
+                    <form method="POST" action="{{ route('bookings.store') }}" data-availability-url="{{ route('bookings.availability') }}">
                         @csrf
 
                         <div class="mb-3">
@@ -58,12 +63,16 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="date" class="form-label">Date <span class="text-danger">*</span></label>
-                                <input type="date"
+                                <input type="text"
                                        class="form-control @error('date') is-invalid @enderror"
                                        id="date"
                                        name="date"
                                        value="{{ old('date') }}"
                                        min="{{ date('Y-m-d') }}"
+                                       placeholder="YYYY-MM-DD"
+                                       autocomplete="off"
+                                       readonly
+                                       inputmode="none"
                                        required>
                                 @error('date')
                                     <div class="invalid-feedback">
@@ -94,7 +103,7 @@
                                         {{ $message }}
                                     </div>
                                 @enderror
-                                <small class="text-muted">Business hours: 8:00 AM - 5:00 PM</small>
+                                <small class="text-muted">Business hours: 8:00 AM - 5:00 PM. Unavailable times will be disabled.</small>
                             </div>
                         </div>
 

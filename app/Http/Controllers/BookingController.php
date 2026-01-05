@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Http\Requests\BookingRequest;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 
 class BookingController extends Controller
 {
@@ -47,6 +48,33 @@ class BookingController extends Controller
         }
 
         return view('bookings.index', compact('myBookings', 'hairdressers'));
+    }
+
+    /**
+     * Get available hours for a selected hairdresser.
+     */
+    public function availability(Request $request)
+    {
+        $data = $request->validate([
+            'hairdresser_id' => [
+                'required',
+                'integer',
+                Rule::exists('users', 'id'),
+            ],
+            'date' => ['required', 'date_format:Y-m-d'],
+        ]);
+
+        $takenHours = Booking::query()
+            ->where('hairdresser_id', $data['hairdresser_id'])
+            ->whereDate('scheduled_at', $data['date'])
+            ->orderBy('scheduled_at')
+            ->get(['scheduled_at'])
+            ->map(fn ($booking) => $booking->scheduled_at->format('H:i'))
+            ->values();
+
+        return response()->json([
+            'taken_hours' => $takenHours,
+        ]);
     }
 
     /**
