@@ -1,0 +1,268 @@
+openapi: 3.0.3
+info:
+  title: Hairdresser Booking API
+  version: 1.0.0
+  description: OpenAPI specification for the booking endpoints defined in routes/api.php.
+servers:
+- url: http://localhost:8000/api
+  description: Local dev (artisan serve)
+- url: http://localhost/api
+  description: Local dev (virtual host)
+tags:
+- name: Bookings
+  description: Create and list bookings.
+paths:
+  /bookings:
+    get:
+      tags:
+      - Bookings
+      summary: List bookings for a client email
+      description: Returns all bookings that match the provided email, ordered by
+        scheduled_at.
+      parameters:
+      - name: email
+        in: query
+        required: true
+        schema:
+          type: string
+          format: email
+        description: Client email address to filter bookings by.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingIndexResponse'
+              examples:
+                success:
+                  value:
+                    success: true
+                    data:
+                    - id: 12
+                      hairdresser_id: 3
+                      date: '2026-01-10'
+                      time: '10:00'
+                    - id: 18
+                      hairdresser_id: 3
+                      date: '2026-02-02'
+                      time: '14:00'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                missing_email:
+                  value:
+                    success: false
+                    message: Validation failed.
+                    errors:
+                      email:
+                      - The email field is required.
+                invalid_email:
+                  value:
+                    success: false
+                    message: Validation failed.
+                    errors:
+                      email:
+                      - The email field must be a valid email address.
+    post:
+      tags:
+      - Bookings
+      summary: Create a new booking
+      description: Creates a booking for the given hairdresser at the provided date
+        and start_time.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+            examples:
+              example:
+                value:
+                  client_email: client@example.com
+                  hairdresser_id: 3
+                  date: '2026-01-10'
+                  start_time: '10:00'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBookingResponse'
+              examples:
+                success:
+                  value:
+                    success: true
+                    message: Booking confirmed! We look forward to seeing you.
+                    data:
+                      id: 25
+                      client_email: client@example.com
+                      hairdresser_id: 3
+                      scheduled_at: '2026-01-10T10:00:00+02:00'
+        '422':
+          description: Validation failed (FormRequest or business-rule validation)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                form_request_validation:
+                  value:
+                    success: false
+                    message: Validation failed.
+                    errors:
+                      client_email:
+                      - Please provide a valid email address.
+                      hairdresser_id:
+                      - The provided hairdresser does not exist.
+                      date:
+                      - Please provide a date from today onwards.
+                      start_time:
+                      - Please provide a valid time in HH:MM format.
+                weekend_rule:
+                  value:
+                    success: false
+                    message: Validation failed.
+                    errors:
+                      date:
+                      - Bookings are not available on weekends.
+                slot_taken:
+                  value:
+                    success: false
+                    message: Validation failed.
+                    errors:
+                      start_time:
+                      - This time slot is already booked. Please choose another time.
+components:
+  schemas:
+    BookingListItem:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - hairdresser_id
+      - date
+      - time
+      properties:
+        id:
+          type: integer
+          example: 12
+        hairdresser_id:
+          type: integer
+          example: 3
+        date:
+          type: string
+          format: date
+          example: '2026-01-10'
+        time:
+          type: string
+          pattern: ^\d{2}:\d{2}$
+          example: '10:00'
+    BookingIndexResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - success
+      - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingListItem'
+    CreateBookingRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - client_email
+      - hairdresser_id
+      - date
+      - start_time
+      properties:
+        client_email:
+          type: string
+          format: email
+          maxLength: 255
+          description: Client email. Must not belong to a hairdresser account.
+        hairdresser_id:
+          type: integer
+          description: Must reference an existing user with role=hairdresser.
+        date:
+          type: string
+          format: date
+          description: Booking date (YYYY-MM-DD). Must be today or later.
+        start_time:
+          type: string
+          pattern: ^\d{2}:\d{2}$
+          description: Start time in 24h format (HH:MM). Must be on the hour and within
+            business hours.
+    CreateBookingResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - success
+      - message
+      - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Booking confirmed! We look forward to seeing you.
+        data:
+          type: object
+          additionalProperties: false
+          required:
+          - id
+          - client_email
+          - hairdresser_id
+          - scheduled_at
+          properties:
+            id:
+              type: integer
+              example: 25
+            client_email:
+              type: string
+              format: email
+              example: client@example.com
+            hairdresser_id:
+              type: integer
+              example: 3
+            scheduled_at:
+              type: string
+              format: date-time
+              example: '2026-01-10T10:00:00+02:00'
+    ValidationErrors:
+      type: object
+      description: Map of field name -> array of error messages.
+      additionalProperties:
+        type: array
+        items:
+          type: string
+      example:
+        start_time:
+        - Bookings must start exactly on the hour (e.g., 10:00).
+    ValidationErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - success
+      - message
+      - errors
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Validation failed.
+        errors:
+          $ref: '#/components/schemas/ValidationErrors'
