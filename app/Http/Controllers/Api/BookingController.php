@@ -62,7 +62,7 @@ class BookingController extends Controller
         $booking = Booking::create([
             'name' => null,
             'email' => $data['client_email'],
-            'hairdresser_id' => (int) $data['hairdresser_id'],
+            'hairdresser_id' => $data['hairdresser_id'],
             'scheduled_at' => $scheduledAt,
         ]);
 

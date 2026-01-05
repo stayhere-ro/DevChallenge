@@ -265,21 +265,28 @@ class BookingApiTest extends TestCase
     {
         Mail::fake();
 
-        User::factory()->create([
+        $hairdresser = User::factory()->create([
             'email' => 'hairdresser@example.com',
             'name' => 'Hair Dresser',
+            'role' => 'hairdresser',
         ]);
+
+        $date = Carbon::parse('next monday')->toDateString();
 
         $payload = [
             'name' => 'Client Name',
             'email' => 'client@example.com',
-            'date' => now()->addDay()->toDateString(),
+            'date' => $date,
             'hour' => '10:00',
+            'hairdresser_id' => $hairdresser->id,
         ];
 
-        $this->post('/bookings', $payload)->assertRedirect();
+        $this->post('/bookings', $payload)
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
 
         Mail::assertSent(NewBookingMail::class, fn ($m) => $m->hasTo('hairdresser@example.com'));
         Mail::assertSent(BookingConfirmationMail::class, fn ($m) => $m->hasTo('client@example.com'));
     }
+
 }

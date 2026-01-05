@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests\Api;
 
+use App\Models\User;
 use App\Models\Booking;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class StoreBookingRequest extends FormRequest
 {
@@ -26,8 +28,24 @@ class StoreBookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'client_email' => 'required|email|max:255',
-            'hairdresser_id' => 'required|integer|exists:users,id',
+            'client_email' => [
+                'required',
+                'email',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    $isHairdresser = User::query()
+                        ->where('email', $value)
+                        ->where('role', 'hairdresser')
+                        ->exists();
+
+                    if ($isHairdresser) $fail('This email belongs to a hairdresser account. Please use a client email.');
+                },
+            ],
+            'hairdresser_id' => [
+                'required',
+                'integer',
+                Rule::exists('users', 'id')->where('role', 'hairdresser'),
+            ],
             'date' => 'required|date_format:Y-m-d|after_or_equal:today',
             'start_time' => 'bail|required|date_format:H:i',
         ];
@@ -80,7 +98,7 @@ class StoreBookingRequest extends FormRequest
             if ($hasBlockingErrors()) return;
 
             // Check if the time slot is already booked
-            $exists = Booking::where('hairdresser_id', $this->input('hairdresser_id'))
+            $exists = Booking::where('hairdresser_id', (int) $this->input('hairdresser_id'))
                 ->where('scheduled_at', $scheduledAt)
                 ->exists();
 

@@ -30,7 +30,7 @@
                                    class="form-control @error('name') is-invalid @enderror"
                                    id="name"
                                    name="name"
-                                   value="{{ old('name') }}"
+                                   value="{{ old('name', auth()->user()->name ?? '') }}"
                                    required
                                    autofocus>
                             @error('name')
@@ -46,7 +46,7 @@
                                    class="form-control @error('email') is-invalid @enderror"
                                    id="email"
                                    name="email"
-                                   value="{{ old('email') }}"
+                                   value="{{ old('email', auth()->user()->email ?? '') }}"
                                    required>
                             @error('email')
                                 <div class="invalid-feedback">
@@ -95,6 +95,28 @@
                                     </div>
                                 @enderror
                                 <small class="text-muted">Business hours: 8:00 AM - 5:00 PM</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="hairdresser_id" class="form-label">Hairdresser <span class="text-danger">*</span></label>
+                                <select class="form-select @error('hairdresser_id') is-invalid @enderror"
+                                    id="hairdresser_id"
+                                    name="hairdresser_id"
+                                    required>
+                                    <option value="">Select a hairdresser</option>
+                                    @foreach($hairdressers as $hairdresser)
+                                        <option value="{{ $hairdresser->id }}" @selected(old('hairdresser_id') == $hairdresser->id)>
+                                        {{ $hairdresser->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('hairdresser_id')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                         </div>
 

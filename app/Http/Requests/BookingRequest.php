@@ -7,6 +7,7 @@ use Illuminate\Validation\Validator;
 use App\Models\Booking;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 
 class BookingRequest extends FormRequest
 {
@@ -27,9 +28,26 @@ class BookingRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    $isHairdresser = User::query()
+                        ->where('email', $value)
+                        ->where('role', 'hairdresser')
+                        ->exists();
+
+                    if ($isHairdresser) $fail('This email belongs to a hairdresser account. Please use a client email.');
+                },
+            ],
             'date' => 'required|date|after_or_equal:today',
             'hour' => 'required|date_format:H:i',
+            'hairdresser_id' => [
+                'required',
+                'integer',
+                Rule::exists('users', 'id')->where('role', 'hairdresser'),
+            ],
         ];
     }
 
@@ -68,10 +86,12 @@ class BookingRequest extends FormRequest
                 }
 
                 // the time slot is already booked
-                $hairdresserId = User::where('email', 'hairdresser@example.com')->value('id');
+                $hairdresserId = (int) $this->input('hairdresser_id');
+
                 $exists = Booking::where('hairdresser_id', $hairdresserId)
                     ->where('scheduled_at', $scheduledAt)
                     ->exists();
+
                 if ($exists) {
                     $validator->errors()->add('hour', 'This time slot is already booked. Please choose another time.');
                 }
@@ -92,6 +112,8 @@ class BookingRequest extends FormRequest
             'date.after_or_equal' => 'Please select a date from today onwards.',
             'hour.required' => 'Please select a time.',
             'hour.date_format' => 'Please select a valid time in HH:MM format.',
+            'hairdresser_id.required' => 'Please select a hairdresser.',
+            'hairdresser_id.exists' => 'Please select a valid hairdresser.',
         ];
     }
 }

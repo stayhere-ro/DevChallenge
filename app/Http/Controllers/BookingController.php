@@ -23,16 +23,27 @@ class BookingController extends Controller
      */
     public function store(BookingRequest $request, BookingNotificationService $notifier)
     {
+        if (auth()->check() && auth()->user()->isHairdresser()) {
+            abort(403);
+        }
+
         $data = $request->validated();
 
         $scheduledAt = Carbon::parse($data['date'] . ' ' . $data['hour'] . ':00');
-        $hairdresserId = User::where('email', 'hairdresser@example.com')->firstOrFail()->id;
+
+        $name = $data['name'];
+        $email = $data['email'];
+
+        if (auth()->check() && auth()->user()->isClient()) {
+            $name = auth()->user()->name;
+            $email = auth()->user()->email;
+        }
 
         $booking = Booking::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
+            'name' => $name,
+            'email' => $email,
             'scheduled_at' => $scheduledAt,
-            'hairdresser_id' => $hairdresserId,
+            'hairdresser_id' => $data['hairdresser_id'],
         ]);
 
         $notifier->sendForNewBooking($booking);
