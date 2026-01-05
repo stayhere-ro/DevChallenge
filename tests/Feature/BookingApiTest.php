@@ -8,8 +8,8 @@ use App\Models\Booking;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Illuminate\Support\Facades\Mail;
+use Tests\TestCase;
 
 class BookingApiTest extends TestCase
 {
@@ -18,13 +18,12 @@ class BookingApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Freeze time to a specific date.
-        Carbon::setTestNow(Carbon::create(2026, 1, 5, 9, 0, 0 ,'UTC'));
+        $timezone = config('app.timezone');
+        Carbon::setTestNow(Carbon::create(2026, 1, 5, 9, 0, 0, $timezone));
     }
 
     protected function tearDown(): void
     {
-        // Reset time to default.
         Carbon::setTestNow();
         parent::tearDown();
     }
@@ -63,7 +62,9 @@ class BookingApiTest extends TestCase
         $this->assertDatabaseHas('bookings', [
             'email' => 'client@example.com',
             'hairdresser_id' => $hairdresser->id,
-            'scheduled_at' => '2026-01-05 10:00:00',
+            'scheduled_at' => Carbon::createFromFormat(
+                'Y-m-d H:i:s',
+                '2026-01-05 10:00:00', config('app.timezone') ?? 'UTC')->format('Y-m-d H:i:s'),
         ]);
     }
 
@@ -104,10 +105,11 @@ class BookingApiTest extends TestCase
         $this->assertDatabaseHas('bookings', [
             'email' => 'client@example.com',
             'hairdresser_id' => $hairdresserB->id,
-            'scheduled_at' => '2026-01-05 10:00:00',
+            'scheduled_at' => Carbon::createFromFormat(
+                'Y-m-d H:i:s',
+                '2026-01-05 10:00:00', config('app.timezone') ?? 'UTC')->format('Y-m-d H:i:s'),
         ]);
     }
-
 
     /**
      * Test a failed booking due to a conflicting slot.
@@ -137,6 +139,7 @@ class BookingApiTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Validation failed.')
             ->assertJsonStructure(['success', 'message', 'errors'])
             ->assertJsonPath('errors.start_time.0', 'This time slot is already booked. Please choose another time.');
     }
@@ -157,6 +160,7 @@ class BookingApiTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Validation failed.')
             ->assertJsonStructure(['success', 'message', 'errors'])
             ->assertJsonPath('errors.date.0', 'Bookings are not available on weekends.');
     }
@@ -177,8 +181,9 @@ class BookingApiTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Validation failed.')
             ->assertJsonStructure(['success', 'message', 'errors'])
-            ->assertJsonPath('errors.start_time.0', 'Bookings are only available between 08:00 and 17:00 (last start before 17:00).');
+            ->assertJsonPath('errors.start_time.0', 'Bookings are only available between 08:00 AM and 5:00 PM.');
     }
 
     /**
@@ -189,17 +194,34 @@ class BookingApiTest extends TestCase
         $email = 'client@example.com';
         $hairdresser = $this->makeHairdresser(['email' => 'hairdresser@example.com']);
 
-        Booking::factory()->count(3)->create([
-            'email' => $email,
-            'hairdresser_id' => $hairdresser->id,
-        ]);
+        $slots = [
+            '2026-01-05 10:00:00',
+            '2026-01-05 11:00:00',
+            '2026-01-05 12:00:00',
+        ];
 
-        Booking::factory()->count(2)->create([
-            'email' => 'other@example.com',
-            'hairdresser_id' => $hairdresser->id,
-        ]);
+        foreach ($slots as $slot) {
+            Booking::factory()->create([
+                'email' => $email,
+                'hairdresser_id' => $hairdresser->id,
+                'scheduled_at' => $slot,
+            ]);
+        }
 
-        $response = $this->getJson('/api/bookings?email=' . $email);
+        $otherSlots = [
+            '2026-01-06 10:00:00',
+            '2026-01-06 11:00:00',
+        ];
+
+        foreach ($otherSlots as $slot) {
+            Booking::factory()->create([
+                'email' => 'other@example.com',
+                'hairdresser_id' => $hairdresser->id,
+                'scheduled_at' => $slot,
+            ]);
+        }
+
+        $response = $this->getJson('/api/bookings?email='.$email);
 
         $response->assertOk()
             ->assertJsonPath('success', true)
@@ -214,10 +236,10 @@ class BookingApiTest extends TestCase
         $response = $this->getJson('/api/bookings?email=not-an-email');
 
         $response->assertStatus(422)
-            ->assertJson([
-                'message' => 'Validation failed',
-            ])
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Validation failed.')
             ->assertJsonStructure([
+                'success',
                 'message',
                 'errors' => ['email'],
             ]);
@@ -231,10 +253,10 @@ class BookingApiTest extends TestCase
         $response = $this->getJson('/api/bookings?email=');
 
         $response->assertStatus(422)
-            ->assertJson([
-                'message' => 'Validation failed',
-            ])
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Validation failed.')
             ->assertJsonStructure([
+                'success',
                 'message',
                 'errors' => ['email'],
             ]);
@@ -279,7 +301,8 @@ class BookingApiTest extends TestCase
             'role' => 'hairdresser',
         ]);
 
-        $date = Carbon::parse('next monday')->toDateString();
+        $timezone = config('app.timezone');
+        $date = Carbon::parse('next monday', $timezone)->toDateString();
 
         $payload = [
             'name' => 'Client Name',
@@ -296,5 +319,4 @@ class BookingApiTest extends TestCase
         Mail::assertSent(NewBookingMail::class, fn ($m) => $m->hasTo('hairdresser@example.com'));
         Mail::assertSent(BookingConfirmationMail::class, fn ($m) => $m->hasTo('client@example.com'));
     }
-
 }
