@@ -2,7 +2,6 @@ name: Laravel CI
 
 on:
   push:
-
     branches: ["solution-dev-challenge"]
   pull_request:
     branches: ["solution-dev-challenge"]
@@ -51,7 +50,10 @@ jobs:
           DB_DATABASE: testing
           DB_USERNAME: root
           DB_PASSWORD: password
-        run: php artisan test tests/Feature/BookingTest.php
+        run: |
+          php artisan test tests/Feature/BookingTest.php
+          php artisan test tests/Feature/BookingIdempotencyTest.php
+          php artisan test tests/Feature/BookingRateLimiterTest.php
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse app --level=5

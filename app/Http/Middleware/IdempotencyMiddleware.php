@@ -39,7 +39,7 @@ class IdempotencyMiddleware
         // 4. If the response was successful cache the key
         if($response->isSuccessful()){
             Cache::put($cacheKey, [
-                'content' => $response->original,
+                'content' => $response->getContent(),
                 'status' => $response->getStatusCode()
             ], now()->addHours(10));
         }
