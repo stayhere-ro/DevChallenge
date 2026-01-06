@@ -10,9 +10,12 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class BookingConfirmedClient extends Mailable
+class BookingConfirmedClient extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
+
+    public $tries = 5;
+    public $backoff = [5,10,30,60];
 
     /**
      * Create a new message instance.

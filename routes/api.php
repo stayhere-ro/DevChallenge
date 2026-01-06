@@ -19,5 +19,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/bookings', [ApiBookingController::class, 'store']);
+Route::post('/bookings', [ApiBookingController::class, 'store'])
+    ->middleware(['idempotent','throttle:bookings']);
+
 Route::get('/bookings', [ApiBookingController::class, 'index']);

@@ -20,8 +20,8 @@ class BookingService
             'scheduled_at'   => $data->scheduled_at,
         ]);
 
-        Mail::to($booking->hairdresser->email)->send(new NewBookingHairdresser($booking));
-        Mail::to($booking->email)->send(new BookingConfirmedClient($booking));
+        Mail::to($booking->hairdresser->email)->queue(new NewBookingHairdresser($booking));
+        Mail::to($booking->email)->queue(new BookingConfirmedClient($booking));
 
         return $booking;
     }

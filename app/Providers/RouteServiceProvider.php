@@ -47,7 +47,17 @@ class RouteServiceProvider extends ServiceProvider
 
         // Throttle booking form submissions to mitigate abuse
         RateLimiter::for('bookings', function (Request $request) {
-            return Limit::perMinute(10)->by($request->ip());
+            return Limit::perMinute(10)
+                ->by($request->ip())
+                ->response(function (Request $request, array $headers){
+
+                    $retryAfter = $headers['Retry-After'] ?? null;
+
+                    return response()->json([
+                        'message' => 'Too many booking attempts.',
+                        'retry_after_seconds' => (int) $retryAfter ,
+                    ], 429, $headers);
+                });
         });
     }
 }
