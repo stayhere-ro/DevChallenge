@@ -96,3 +96,39 @@ Tasks completed: 12, 13
 Tasks completed: 17 (partially)
 
 
+## Local Installation and Setup
+
+1. **Install dependencies**
+   ```bash
+   composer install
+   npm install
+   ```
+
+2. **Configure environment**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+   **Note**: Open the `.env` file and configure your database credentials
+
+
+3. **Setup database**
+   ```bash
+   # Run migrations and seed the database
+   php artisan migrate --seed
+   ```
+
+4. **Build assets & run**
+   ```bash
+   npm run build
+   php artisan serve
+   ```
+
+
+## Default User Credentials
+
+For testing purposes, you can log in with the following default user account:
+
+- **Email:** testuser@example.com
+- **Password:** password
+
