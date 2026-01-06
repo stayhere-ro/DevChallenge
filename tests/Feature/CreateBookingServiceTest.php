@@ -42,7 +42,7 @@ class CreateBookingServiceTest extends TestCase
             scheduledAt: Carbon::create(2026, 1, 5, 10, 0, 0, config('app.timezone'))
         );
 
-        $service = new CreateBookingService();
+        $service = new CreateBookingService;
         $booking = $service->create($dto, config('app.timezone'));
 
         $this->assertDatabaseHas('bookings', [
@@ -74,7 +74,7 @@ class CreateBookingServiceTest extends TestCase
             hairdresserId: $hairdresser->id,
             scheduledAt: Carbon::create(2026, 1, 5, 10, 0, 0, config('app.timezone'))
         );
-        $service = new CreateBookingService();
+        $service = new CreateBookingService;
 
         try {
             $service->create($dto, config('app.timezone'));

@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\User;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class BookingRequest extends FormRequest
@@ -13,7 +13,7 @@ class BookingRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return !auth()->check() || !auth()->user()->isHairdresser();
+        return ! auth()->check() || ! auth()->user()->isHairdresser();
     }
 
     /**
@@ -35,7 +35,9 @@ class BookingRequest extends FormRequest
                         ->where('role', 'hairdresser')
                         ->exists();
 
-                    if ($isHairdresser) $fail('This email belongs to a hairdresser account. Please use a client email.');
+                    if ($isHairdresser) {
+                        $fail('This email belongs to a hairdresser account. Please use a client email.');
+                    }
                 },
             ],
             'date' => 'required|date|after_or_equal:today',

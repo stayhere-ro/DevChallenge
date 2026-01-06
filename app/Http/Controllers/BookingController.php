@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\BookingNotificationService;
-use App\Models\Booking;
-use App\Models\User;
-use App\Http\Requests\BookingRequest;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use App\DTO\CreateBookingData;
 use App\Exceptions\BookingValidationException;
+use App\Http\Requests\BookingRequest;
+use App\Models\Booking;
+use App\Models\User;
+use App\Services\BookingNotificationService;
 use App\Services\CreateBookingService;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class BookingController extends Controller
 {

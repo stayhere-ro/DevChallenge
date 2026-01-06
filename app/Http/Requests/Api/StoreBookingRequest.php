@@ -36,7 +36,9 @@ class StoreBookingRequest extends FormRequest
                         ->where('role', 'hairdresser')
                         ->exists();
 
-                    if ($isHairdresser) $fail('This email belongs to a hairdresser account. Please use a client email.');
+                    if ($isHairdresser) {
+                        $fail('This email belongs to a hairdresser account. Please use a client email.');
+                    }
                 },
             ],
             'hairdresser_id' => [

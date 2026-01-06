@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class HairdresserSeeder extends Seeder
 {
@@ -39,4 +38,3 @@ class HairdresserSeeder extends Seeder
         $this->command->info('Example Login: hairdresser@example.com / password');
     }
 }
-

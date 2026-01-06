@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\DTO\CreateBookingData;
+use App\Exceptions\BookingValidationException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreBookingRequest;
 use App\Models\Booking;
 use App\Services\BookingNotificationService;
+use App\Services\CreateBookingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\DTO\CreateBookingData;
-use App\Exceptions\BookingValidationException;
-use App\Services\CreateBookingService;
 
 class BookingController extends Controller
 {

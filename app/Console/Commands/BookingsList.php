@@ -28,8 +28,9 @@ class BookingsList extends Command
     {
         $email = (string) $this->argument('email');
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->error('Please provide a valid email address.');
+
             return self::FAILURE;
         }
 
@@ -40,6 +41,7 @@ class BookingsList extends Command
 
         if ($bookings->isEmpty()) {
             $this->info("No bookings found for {$email}.");
+
             return self::SUCCESS;
         }
 
