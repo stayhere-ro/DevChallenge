@@ -34,6 +34,7 @@ class BookingService
         }
 
         return Booking::where('user_id', $user->id)
+            ->with('hairdresser')
             ->orderBy('scheduled_at')
             ->get();
     }

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.guest_booking')
 
 @section('content')
 <div class="container">
@@ -130,14 +130,6 @@
                     </form>
                 </div>
             </div>
-
-            @auth
-                <div class="mt-3 text-center">
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
-                        View Admin Dashboard
-                    </a>
-                </div>
-            @endauth
         </div>
     </div>
 </div>
