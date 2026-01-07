@@ -19,7 +19,7 @@ class Hairdresser extends Model
         'remember_token',
     ];
     public function bookings(){
-        return $this->belongsToMany(Booking::class);
+        return $this->belongsToMany(Booking::class,'booking_hairdresser');
 
     }
 

@@ -10,14 +10,15 @@ class Booking extends Model
     use HasFactory;
 
     protected $fillable = [
-        'booking_date',
-        'booking_time',
+        'date',
+        'time',
+        'user_id',
 
     ];
 
     protected $casts = [
-        'booking_date' => 'date',
-        'booking_time' => 'datetime:H:i',
+        'date' => 'date',
+        'time' => 'datetime:H:i',
     ];
 
     /**
@@ -39,6 +40,6 @@ class Booking extends Model
         return $this->belongsTo(User::class);
     }
     public function hairdresser(){
-        return $this->belongsToMany(Hairdresser::class);
+        return $this->belongsToMany(Hairdresser::class,'booking_hairdresser');
     }
 }
