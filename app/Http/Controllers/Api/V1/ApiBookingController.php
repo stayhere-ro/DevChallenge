@@ -9,6 +9,7 @@ use App\Models\Booking;
 use App\Http\Requests\BookingRequest;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 
 class ApiBookingController extends Controller
@@ -33,7 +34,7 @@ class ApiBookingController extends Controller
         $user = User::firstOrCreate([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' =>Hash::make('password'),
+            'password' => Hash::make('password'),
         ]);
         $booking = Booking::create([
             'user_id' => $user->id,
@@ -47,4 +48,14 @@ class ApiBookingController extends Controller
             201);
     }
 
+    public function show($id)
+    {
+        try{
+             return response()->json(User::findOrFail($id)->bookings,200);
+
+        }catch(ModelNotFoundException $e){
+            return response()->json(['message' => 'User not found!'],404);
+        }
+
+    }
 }
