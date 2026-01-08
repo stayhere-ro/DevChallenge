@@ -178,4 +178,51 @@ Created for StartUpHUB DevChallenge - November 2025
 
 **Need Help?** Check [DOCUMENTATION.md](DOCUMENTATION.md) for detailed setup and usage instructions.
 
+## What  I did in this project
+
+ A) Selected tasks:
+1. Create a basic booking endpoint
+  - I created a basic api endpoint because it is essential to eny project to have api if whe plan to use in other platforms
+2. Prevent overbooking
+    - I used validation rules that were provided in the code with minor changes 
+3. Seeder and factories
+    - I used seeders to populate the database with some data
+4. Basic API listing
+    - I created a basic api listing to view all bookings, and hairsers
+
+5. Service layer implementation
+    - I created a service layer to handle business logic, and I think that it is a good practice to do so in every project
+6. API documentation
+  - I created a basic api documentation using swagger, here I have some trouble, I cant figured out why the post methodes are not working
+
+ B) Tradeoffs and compromises:
+
+  - I changed the database structure to make it more suitable for the future changes; 
+  - the price was that I generated redundant data and introduced pivot tables
+  - here at the db schema I have spent more time
+  - because I changed the structure of db, the web route for bookings needs to be changed
+
+C) Future improvements and next steps for myself:
+  - we need to add validation rules for DTO objects
+  - at this time the post methode in BookingControllerWithDTO is working without any validation
+  - create unit and integration tests
+  
+D) Testing the application:
+- I tested the application using postman
+  https://web.postman.co/workspace/4752b982-10e6-4e86-84cb-a10f81e77a82
+
+
+
+
+
+
+
+
+
+
+
+
+
+- 
+
 
