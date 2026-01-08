@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\V1\ApiBookingController;
+use App\Http\Controllers\Api\V1\HairdresserControllerWithDTO;
+use App\Http\Controllers\Api\V1\UserControllerWithDTO;
 use App\Http\Controllers\BookingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,4 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route ::apiResource('bookings', ApiBookingController::class);
+Route::post('/users',[UserControllerWithDTO::class,'store']);
+Route::post('/hairdressers',[HairdresserControllerWithDTO::class,'store']);
+
 
