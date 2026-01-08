@@ -1,0 +1,251 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "My Laravel API",
+        "description": "API documentation",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Local server"
+        }
+    ],
+    "paths": {
+        "/api/bookings": {
+            "get": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "List bookings",
+                "description": "Display the booking form.",
+                "operationId": "f105ce3dae460fa635a5a3af41c6cf05",
+                "responses": {
+                    "200": {
+                        "description": "List of bookings"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Store a new booking.",
+                "operationId": "27ae177e0dc459463142332cc44074f0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "example": "2026-01-08"
+                                    },
+                                    "hour": {
+                                        "type": "string",
+                                        "example": "14:00"
+                                    },
+                                    "hairdresser_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Booking created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/bookings/{id}": {
+            "get": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Get bookings for a user by id.",
+                "operationId": "7733c3ebeb0a89755dfbed8a4ebdb41d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User bookings"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            }
+        },
+        "/api/v1/bookings": {
+            "post": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Create a new booking (DTO)",
+                "operationId": "createBooking",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "date": {
+                                        "type": "string",
+                                        "example": "2026-01-08"
+                                    },
+                                    "hour": {
+                                        "type": "string",
+                                        "example": "14:00"
+                                    },
+                                    "hairdresser_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "john@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Booking created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/hairdressers": {
+            "post": {
+                "tags": [
+                    "Hairdressers"
+                ],
+                "summary": "Create a new hairdresser (DTO)",
+                "operationId": "2299ce0cc0e0275d105ed83339ee4e23",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Jane Stylist"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "jane@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Hairdresser created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/users": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Create a new user (DTO)",
+                "operationId": "d2e0d1ef66a1015d8b33d6adbe618cb0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "secret"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Bookings",
+            "description": "API Endpoints for bookings (DTO-based)"
+        },
+        {
+            "name": "Hairdressers",
+            "description": "API Endpoints for hairdressers (DTO-based)"
+        },
+        {
+            "name": "Users",
+            "description": "API Endpoints for users (DTO-based)"
+        }
+    ]
+}
