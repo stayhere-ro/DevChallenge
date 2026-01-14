@@ -39,7 +39,6 @@
                                 </div>
                             @enderror
                         </div>
-
                         <div class="mb-3">
                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                             <input type="email"
@@ -54,6 +53,24 @@
                                 </div>
                             @enderror
                         </div>
+                        <div class="mb-3">
+                            <label for="hairdresser_id" class="form-label">Hairdresser</label>
+                            <select name="hairdresser_id" id="hairdresser_id" class="form-select" required>
+                                <option value="">Select a hairdresser</option>
+                                @foreach($hairdressers as $hairdresser)
+                                    <option value="{{ $hairdresser->id }}" {{ old('hairdresser_id') == $hairdresser->id ? 'selected' : '' }}>
+                                        {{ $hairdresser->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('hairdresser_id')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+
+
+
 
                         <div class="row">
                             <div class="col-md-6 mb-3">

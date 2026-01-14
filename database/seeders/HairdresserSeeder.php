@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Hairdresser;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
@@ -14,17 +15,19 @@ class HairdresserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create a hairdresser user for admin access
-        User::updateOrCreate(
+        // Create a hairdresser  for admin access
+       /* Hairdresser::updateOrCreate(
             ['email' => 'hairdresser@example.com'],
             [
                 'name' => 'Hairdresser Admin',
                 'password' => Hash::make('password'),
             ]
-        );
+        );*/
+        Hairdresser::factory(3)
+            ->create();
 
-        $this->command->info('Hairdresser user created successfully!');
-        $this->command->info('Email: hairdresser@example.com');
+        $this->command->info('Hairdresser  created successfully!');
+       // $this->command->info('Email: hairdresser@example.com');
         $this->command->info('Password: password');
     }
 }

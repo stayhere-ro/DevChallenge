@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ApiBookingController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BookingController;
@@ -18,9 +19,10 @@ use App\Http\Controllers\Admin\DashboardController;
 
 // Public booking routes
 Route::get('/', [BookingController::class, 'index'])->name('bookings.index');
-Route::post('/bookings', [BookingController::class, 'store'])
+Route::post('/bookings', [ApiBookingController::class, 'store'])
     ->middleware('throttle:bookings')
     ->name('bookings.store');
+//Route::post('/bookings',[ApiBookingController::class,'store']);
 
 // Admin routes (protected by auth middleware)
 Route::prefix('admin')->middleware('auth')->group(function () {
@@ -32,3 +34,4 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 Auth::routes(['register' => false]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+

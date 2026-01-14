@@ -29,6 +29,7 @@ class BookingRequest extends FormRequest
             'email' => 'required|email|max:255',
             'date' => 'required|date|after_or_equal:today',
             'hour' => 'required|date_format:H:i',
+
         ];
     }
 

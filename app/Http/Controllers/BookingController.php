@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Http\Requests\BookingRequest;
+use App\Models\Hairdresser;
 use Carbon\Carbon;
 
 class BookingController extends Controller
@@ -13,13 +14,15 @@ class BookingController extends Controller
      */
     public function index()
     {
-        return view('bookings.index');
+        $hairdressers = Hairdresser::all();
+        return view('bookings.index', compact('hairdressers'));
+
     }
 
     /**
      * Store a new booking.
      */
-    public function store(BookingRequest $request)
+ /*   public function store(BookingRequest $request)
     {
         $data = $request->validated();
 
@@ -33,5 +36,5 @@ class BookingController extends Controller
 
         return redirect()->route('bookings.index')
             ->with('success', 'Booking confirmed! We look forward to seeing you.');
-    }
+    }*/
 }
