@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\HairdresserResource;
 use App\Models\Hairdresser;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,9 @@ class HairdresserController extends Controller
      */
     public function index()
     {
-        //
+        $hairdressers = Hairdresser::all();
+       // return view('bookings.index', compact('hairdressers'));
+        return HairdresserResource::collection($hairdressers);
     }
 
     /**
