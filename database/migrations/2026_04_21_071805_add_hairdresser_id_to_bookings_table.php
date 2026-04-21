@@ -18,6 +18,16 @@ return new class extends Migration
                 ->after('id')
                 ->constrained('users')
                 ->cascadeOnDelete();
+
+
+            //drop old index
+            $table->dropUnique('bookings_scheduled_at_unique');
+
+            //new index -> hairdresser id and time combined
+            $table->unique(
+                ['hairdresser_id', 'scheduled_at'],
+                'bookings_hairdresser_scheduled_at_unique'
+            );
         });
     }
 
