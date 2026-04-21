@@ -20,3 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/bookings', [ApiBookingController::class, 'store']);
+Route::get('/bookings', [ApiBookingController::class, 'bookingsRetriever']);
