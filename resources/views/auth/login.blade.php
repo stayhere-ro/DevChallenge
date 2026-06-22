@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.guest_booking')
 
 @section('content')
 <div class="container">
@@ -11,7 +11,7 @@
                     <div class="alert alert-secondary d-flex align-items-center justify-content-between" role="alert">
                         <div>
                             <strong>Demo credentials:</strong>
-                            <div>Email: <code>hairdresser@example.com</code></div>
+                            <div>Email: <code>testuser@example.com</code></div>
                             <div>Password: <code>password</code></div>
                         </div>
                         <button type="button" class="btn btn-sm btn-outline-primary" data-auto-login>Auto login</button>
@@ -81,7 +81,7 @@
                                 var email = document.getElementById('email');
                                 var password = document.getElementById('password');
                                 var remember = document.getElementById('remember');
-                                if (email) email.value = 'hairdresser@example.com';
+                                if (email) email.value = 'testuser@example.com';
                                 if (password) password.value = 'password';
                                 if (remember) remember.checked = true;
                                 var form = btn.closest('.card-body')?.querySelector('form') || document.querySelector('form[action="{{ route('login') }}"]');

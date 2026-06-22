@@ -20,11 +20,14 @@ return new class extends Migration
         DB::statement("UPDATE bookings SET scheduled_at = CONCAT(date, ' ', hour)");
 
         // Make scheduled_at NOT NULL
-        DB::statement("ALTER TABLE bookings MODIFY scheduled_at DATETIME NOT NULL");
+        //DB::statement("ALTER TABLE bookings MODIFY scheduled_at DATETIME NOT NULL");
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->dateTime('scheduled_at')->nullable(false)->change();
+        });
 
         // Add unique index to prevent double-booking for the same slot
         Schema::table('bookings', function (Blueprint $table) {
-            $table->unique('scheduled_at', 'bookings_scheduled_at_unique');
+            $table->unique(['hairdresser_id','scheduled_at'], 'bookings_hairdresser_scheduled_unique');
         });
 
         // Drop old columns
