@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\BookingController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,17 +18,18 @@ use App\Http\Controllers\Admin\DashboardController;
 
 // Public booking routes
 Route::get('/', [BookingController::class, 'index'])->name('bookings.index');
+Route::get('/bookings/availability', [BookingController::class, 'availability'])
+    ->name('bookings.availability');
 Route::post('/bookings', [BookingController::class, 'store'])
     ->middleware('throttle:bookings')
     ->name('bookings.store');
 
 // Admin routes (protected by auth middleware)
-Route::prefix('admin')->middleware('auth')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'role:hairdresser'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 });
 
 // Authentication routes
-// Disable registration for security; remove duplicate Auth::routes call
-Auth::routes(['register' => false]);
+Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

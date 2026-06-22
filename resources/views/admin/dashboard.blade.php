@@ -7,9 +7,9 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Hairdresser Dashboard - Bookings</h4>
-                    <a href="{{ route('bookings.index') }}" class="btn btn-sm btn-outline-primary">
+                    {{-- <a href="{{ route('bookings.index') }}" class="btn btn-sm btn-outline-primary">
                         New Booking
-                    </a>
+                    </a> --}}
                 </div>
 
                 <div class="card-body">
@@ -35,7 +35,7 @@
                                         <tr>
                                             <td>{{ $booking->id }}</td>
                                             <td>
-                                                <strong>{{ $booking->name }}</strong>
+                                                <strong>{{ $booking->name ?: '(not provided)' }}</strong>
                                             </td>
                                             <td>
                                                 <a href="mailto:{{ $booking->email }}">{{ $booking->email }}</a>

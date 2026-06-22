@@ -1,19 +1,21 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Api;
 
 use App\Models\User;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
-class BookingRequest extends FormRequest
+class StoreBookingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return ! auth()->check() || ! auth()->user()->isHairdresser();
+        return true;
     }
 
     /**
@@ -24,8 +26,7 @@ class BookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => [
+            'client_email' => [
                 'required',
                 'email',
                 'max:255',
@@ -40,13 +41,13 @@ class BookingRequest extends FormRequest
                     }
                 },
             ],
-            'date' => 'required|date|after_or_equal:today',
-            'hour' => 'required|date_format:H:i',
             'hairdresser_id' => [
                 'required',
                 'integer',
                 Rule::exists('users', 'id')->where('role', 'hairdresser'),
             ],
+            'date' => 'required|date_format:Y-m-d|after_or_equal:today',
+            'start_time' => 'bail|required|date_format:H:i',
         ];
     }
 
@@ -56,15 +57,24 @@ class BookingRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Please enter your name.',
-            'email.required' => 'Please enter your email address.',
-            'email.email' => 'Please enter a valid email address.',
-            'date.required' => 'Please select a date.',
-            'date.after_or_equal' => 'Please select a date from today onwards.',
-            'hour.required' => 'Please select a time.',
-            'hour.date_format' => 'Please select a valid time in HH:MM format.',
+            'client_email.required' => 'Please provide an email address.',
+            'client_email.email' => 'Please provide a valid email address.',
             'hairdresser_id.required' => 'Please select a hairdresser.',
-            'hairdresser_id.exists' => 'Please select a valid hairdresser.',
+            'hairdresser_id.exists' => 'The provided hairdresser does not exist.',
+            'date.required' => 'Please provide a date.',
+            'date.date_format' => 'Please provide a valid date in YYYY-MM-DD format.',
+            'date.after_or_equal' => 'Please provide a date from today onwards.',
+            'start_time.required' => 'Please provide a start time.',
+            'start_time.date_format' => 'Please provide a valid time in HH:MM format.',
         ];
+    }
+
+    protected function failedValidation(Validator $validator): void
+    {
+        throw new HttpResponseException(response()->json([
+            'success' => false,
+            'message' => 'Validation failed.',
+            'errors' => $validator->errors(),
+        ], 422));
     }
 }

@@ -1,4 +1,5 @@
 {
+    "name": "hairdresser-booking",
     "private": true,
     "scripts": {
         "dev": "vite",

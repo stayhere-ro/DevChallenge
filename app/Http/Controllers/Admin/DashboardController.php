@@ -20,7 +20,9 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $bookings = Booking::orderBy('scheduled_at')
+        $bookings = Booking::query()
+            ->where('hairdresser_id', auth()->id())
+            ->orderBy('scheduled_at')
             ->paginate(15);
 
         return view('admin.dashboard', compact('bookings'));

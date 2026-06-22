@@ -9,7 +9,7 @@ php -v | findstr /C:"PHP"
 echo.
 
 echo Checking Composer...
-composer --version | findstr /C:"Composer"
+call composer --version | findstr /C:"Composer"
 echo.
 
 echo Checking Node.js...
@@ -17,7 +17,7 @@ node -v
 echo.
 
 echo Checking NPM...
-npm -v
+call npm -v
 echo.
 
 echo Checking MySQL connection...
