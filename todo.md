@@ -7,7 +7,7 @@ Goal:
 
 Submission:
 - Fork or branch this repo and implement your changes.
-- Add a short "What I did" section to README or create `SUBMISSION.md` describing:
+- Add a short "What I did" section to `readme.md` or create `SUBMISSION.md` describing:
   - Which tasks you selected and why
   - Assumptions and trade‑offs
   - How to run, test, and verify your work
