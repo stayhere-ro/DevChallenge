@@ -13,6 +13,7 @@ class Booking extends Model
         'name',
         'email',
         'scheduled_at',
+        'hairdresser_id'
     ];
 
     protected $casts = [
