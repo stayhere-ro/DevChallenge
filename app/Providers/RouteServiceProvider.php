@@ -17,7 +17,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/home';
+    public const HOME = '/admin/dashboard';
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
@@ -48,6 +48,21 @@ class RouteServiceProvider extends ServiceProvider
         // Throttle booking form submissions to mitigate abuse
         RateLimiter::for('bookings', function (Request $request) {
             return Limit::perMinute(10)->by($request->ip());
+        });
+
+        RateLimiter::for('api-bookings', function (Request $request) {
+            return Limit::perMinute(20)
+                ->by($request->ip())
+                ->response(function () {
+                    return response()->json([
+                        'message' => 'Too many booking attempts. Please retry later.',
+                        'error' => 'rate_limit_exceeded',
+                    ], 429)->header('Retry-After', '60');
+                });
+        });
+
+        RateLimiter::for('api-availability', function (Request $request) {
+            return Limit::perMinute(120)->by($request->ip());
         });
     }
 }
