@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\BookingController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,10 +25,13 @@ Route::post('/bookings', [BookingController::class, 'store'])
 // Admin routes (protected by auth middleware)
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/bookings/export', \App\Http\Controllers\Admin\BookingExportController::class)->name('admin.bookings.export');
 });
 
 // Authentication routes
 // Disable registration for security; remove duplicate Auth::routes call
 Auth::routes(['register' => false]);
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', fn () => redirect()->route('admin.dashboard'))
+    ->middleware('auth')
+    ->name('home');
