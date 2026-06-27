@@ -1,4 +1,5 @@
 /.phpunit.cache
+/.phpunit.result.cache
 /node_modules
 /public/build
 /public/hot
@@ -8,6 +9,7 @@
 .env
 .env.backup
 .env.production
+!.env.docker
 Homestead.json
 Homestead.yaml
 auth.json
@@ -16,3 +18,23 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Local AI / editor tooling (never commit to challenge fork)
+.codegraph/
+.copilot/
+.cursor/
+
+# Local briefs, mail notes, setup guides
+CODEGRAPH-SETUP.md
+cursor-brief*.md
+mail.md
+
+# Squad orchestration (local only for this submission)
+.squad/
+.squad-workstream
+
+# Accidental Squad GitHub Actions copies (keep .github/workflows/ci.yml)
+.github/agents/
+.github/hooks/
+.github/workflows/squad-*.yml
+.github/workflows/sync-squad-labels.yml
