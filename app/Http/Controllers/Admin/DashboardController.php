@@ -4,24 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     */
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    /**
-     * Display the dashboard with all bookings.
-     */
-    public function index()
+    public function index(): View
     {
-        $bookings = Booking::orderBy('scheduled_at')
-            ->paginate(15);
+        $bookings = Booking::query()->with('hairdresser')->orderByDesc('scheduled_at')->paginate(15);
 
         return view('admin.dashboard', compact('bookings'));
     }
