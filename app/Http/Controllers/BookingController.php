@@ -2,36 +2,46 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Booking;
+use App\DTO\CreateBookingData;
+use App\Exceptions\BookingConflictException;
 use App\Http\Requests\BookingRequest;
-use Carbon\Carbon;
+use App\Models\Hairdresser;
+use App\Services\Booking\BookingService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class BookingController extends Controller
 {
-    /**
-     * Display the booking form.
-     */
-    public function index()
+    public function __construct(
+        private readonly BookingService $bookingService,
+    ) {}
+
+    public function index(): View
     {
-        return view('bookings.index');
+        return view('bookings.index', [
+            'hairdressers' => Hairdresser::active()->orderBy('name')->get(),
+        ]);
     }
 
-    /**
-     * Store a new booking.
-     */
-    public function store(BookingRequest $request)
+    public function store(BookingRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        $defaultHairdresserId = Hairdresser::active()->orderBy('id')->value('id');
 
-        $scheduledAt = Carbon::parse($data['date'] . ' ' . $data['hour'] . ':00');
+        try {
+            $this->bookingService->create(
+                CreateBookingData::fromWebPayload($request->validated(), (int) $defaultHairdresserId)
+            );
+        } catch (ValidationException $e) {
+            return back()->withInput()->withErrors($e->errors());
+        } catch (BookingConflictException) {
+            return back()
+                ->withInput()
+                ->withErrors(['hour' => 'This time slot is already booked. Please choose another time.']);
+        }
 
-        Booking::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'scheduled_at' => $scheduledAt,
-        ]);
-
-        return redirect()->route('bookings.index')
+        return redirect()
+            ->route('bookings.index')
             ->with('success', 'Booking confirmed! We look forward to seeing you.');
     }
 }
