@@ -1,0 +1,98 @@
+{
+  "info": {
+    "name": "DevChallenge Booking API",
+    "description": "Hairdresser booking API for Code Studio DevChallenge.\n\n**Setup**\n1. Import this collection.\n2. Set `base_url` to `http://localhost:8000` (Docker: `make setup`).\n3. For list bookings: create a Sanctum token and set `api_token`.\n\n**Admin UI (web, not API):** `/admin/dashboard` — stylist CRUD, modal booking wizard, CSV export, search/sort.\n\n**Rate limits:** POST bookings 20/min, GET availability 120/min. On 429 expect `Retry-After: 60` and `error: rate_limit_exceeded`.\n\n**Idempotency:** `Idempotency-Key` header replays the same 201 response for 24h.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.1.0"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000" },
+    { "key": "api_token", "value": "" },
+    { "key": "idempotency_key", "value": "{{$guid}}" },
+    { "key": "hairdresser_id", "value": "1" },
+    { "key": "week_start", "value": "2026-06-29" },
+    { "key": "week_end", "value": "2026-07-05" },
+    { "key": "booking_date", "value": "2026-06-30" },
+    { "key": "booking_time", "value": "11:00" }
+  ],
+  "item": [
+    {
+      "name": "Availability",
+      "item": [
+        {
+          "name": "Weekly slots",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/availability?hairdresser_id={{hairdresser_id}}&week_start={{week_start}}&week_end={{week_end}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "availability"],
+              "query": [
+                { "key": "hairdresser_id", "value": "{{hairdresser_id}}" },
+                { "key": "week_start", "value": "{{week_start}}" },
+                { "key": "week_end", "value": "{{week_end}}" }
+              ]
+            },
+            "description": "Returns `{ hairdresser_id, slots: { \"YYYY-MM-DD\": [{ hour: \"08:00\" }, ...] } }`.\nOnly Mon–Fri business hours; booked slots are omitted."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "{{idempotency_key}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"hairdresser_id\": {{hairdresser_id}},\n  \"date\": \"{{booking_date}}\",\n  \"start_time\": \"{{booking_time}}\"\n}"
+            },
+            "url": "{{base_url}}/api/bookings",
+            "description": "Public endpoint. 201 returns `{ data: Booking }`.\n409 `booking_conflict` if slot taken.\n422 for weekend/outside hours/inactive hairdresser."
+          },
+          "response": []
+        },
+        {
+          "name": "Create booking (duplicate slot — expect 409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "conflict-test-{{$guid}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Conflict Test\",\n  \"email\": \"conflict@example.com\",\n  \"hairdresser_id\": {{hairdresser_id}},\n  \"date\": \"{{booking_date}}\",\n  \"start_time\": \"{{booking_time}}\"\n}"
+            },
+            "url": "{{base_url}}/api/bookings",
+            "description": "Run after a successful create with the same hairdresser/date/time to verify 409 handling."
+          },
+          "response": []
+        },
+        {
+          "name": "List my bookings (Sanctum)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{api_token}}" }
+            ],
+            "url": "{{base_url}}/api/bookings",
+            "description": "Requires Sanctum bearer token. Returns paginated bookings for the authenticated user's email only."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
