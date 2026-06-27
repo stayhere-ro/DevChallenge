@@ -1,8 +1,412 @@
-// Fonts
-@import url('https://fonts.bunny.net/css?family=Nunito');
+@import url('https://fonts.bunny.net/css?family=dm-sans:400,500,600,700');
 
-// Variables
 @import 'variables';
-
-// Bootstrap
 @import 'bootstrap/scss/bootstrap';
+
+// ── Global ──────────────────────────────────────────────
+body.salon-app {
+    background: linear-gradient(160deg, #f6f4f1 0%, #ede8e1 45%, #f6f4f1 100%);
+    color: $dark;
+    min-height: 100vh;
+}
+
+.salon-navbar {
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(15, 23, 32, 0.06);
+
+    .navbar-brand {
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: $primary !important;
+    }
+
+    .nav-link {
+        font-weight: 500;
+        color: $secondary !important;
+
+        &:hover {
+            color: $primary !important;
+        }
+    }
+}
+
+.salon-footer {
+    color: $secondary;
+    font-size: 0.875rem;
+    border-top: 1px solid rgba(15, 23, 32, 0.06);
+}
+
+// ── Booking hero ────────────────────────────────────────
+.booking-hero {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    .booking-hero__eyebrow {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: $warning;
+        margin-bottom: 0.75rem;
+    }
+
+    .booking-hero__title {
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        color: $primary;
+        margin-bottom: 0.5rem;
+    }
+
+    .booking-hero__subtitle {
+        color: $secondary;
+        max-width: 36rem;
+        margin: 0 auto;
+    }
+}
+
+// ── Wizard shell ────────────────────────────────────────
+.booking-wizard {
+    background: #fff;
+    border-radius: $border-radius-lg;
+    box-shadow: $box-shadow;
+    border: 1px solid rgba(15, 23, 32, 0.06);
+    overflow: hidden;
+}
+
+.booking-wizard__header {
+    padding: 1.5rem 1.5rem 0;
+    background: linear-gradient(180deg, #fff 0%, #faf9f7 100%);
+}
+
+.booking-wizard__body {
+    padding: 1.5rem;
+}
+
+.booking-wizard__footer {
+    padding: 1rem 1.5rem 1.5rem;
+    border-top: 1px solid rgba(15, 23, 32, 0.06);
+    background: #faf9f7;
+}
+
+// Step indicator
+.wizard-steps {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.wizard-step {
+    flex: 1;
+    text-align: center;
+
+    &__track {
+        height: 4px;
+        border-radius: 999px;
+        background: #e8e2da;
+        margin-bottom: 0.5rem;
+        overflow: hidden;
+    }
+
+    &__fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, $warning, darken($warning, 8%));
+        border-radius: 999px;
+        transition: width 0.3s ease;
+    }
+
+    &--active .wizard-step__fill,
+    &--done .wizard-step__fill {
+        width: 100%;
+    }
+
+    &--done .wizard-step__fill {
+        background: $success;
+    }
+
+    &__label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: $secondary;
+    }
+
+    &--active .wizard-step__label {
+        color: $primary;
+    }
+
+    &--done .wizard-step__label {
+        color: $success;
+    }
+}
+
+// Hairdresser cards
+.stylist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
+}
+
+.stylist-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 2px solid #e8e2da;
+    border-radius: $border-radius;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+
+    &:hover {
+        border-color: lighten($warning, 10%);
+        box-shadow: $box-shadow-sm;
+        transform: translateY(-1px);
+    }
+
+    &--selected {
+        border-color: $warning;
+        background: linear-gradient(180deg, #fffdf9 0%, #fff 100%);
+        box-shadow: 0 0 0 3px rgba(201, 166, 107, 0.15);
+    }
+
+    &__avatar {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #fff;
+        background: linear-gradient(135deg, $primary, lighten($primary, 12%));
+    }
+
+    &__name {
+        font-weight: 600;
+        color: $primary;
+        font-size: 0.95rem;
+    }
+
+    &__meta {
+        font-size: 0.75rem;
+        color: $secondary;
+    }
+}
+
+// Schedule
+.schedule-panel {
+    min-height: 12rem;
+    transition: opacity 0.25s ease;
+
+    &--busy {
+        opacity: 0.72;
+        pointer-events: none;
+    }
+}
+
+.week-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding: 0.75rem 1rem;
+    background: #faf9f7;
+    border-radius: $border-radius;
+    border: 1px solid #ebe6df;
+}
+
+.week-nav__label {
+    font-weight: 600;
+    color: $primary;
+    font-size: 0.9rem;
+}
+
+.day-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.day-chip {
+    padding: 0.65rem 0.5rem;
+    border: 1.5px solid #e8e2da;
+    border-radius: $border-radius-sm;
+    background: #fff;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: $primary;
+    transition: all 0.15s ease;
+
+    &:hover {
+        border-color: $warning;
+    }
+
+    &--selected {
+        background: $primary;
+        border-color: $primary;
+        color: #fff;
+    }
+
+    &__date {
+        display: block;
+        font-weight: 600;
+    }
+
+    &__count {
+        display: block;
+        font-size: 0.7rem;
+        opacity: 0.75;
+    }
+}
+
+.slot-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.slot-chip {
+    min-width: 4.25rem;
+    padding: 0.5rem 0.75rem;
+    border: 1.5px solid #d4e8dc;
+    border-radius: $border-radius-sm;
+    background: #fff;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: $success;
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: #f0faf4;
+        border-color: $success;
+    }
+
+    &--selected {
+        background: $success;
+        border-color: $success;
+        color: #fff;
+    }
+}
+
+// Summary
+.booking-summary {
+    background: #faf9f7;
+    border-radius: $border-radius;
+    border: 1px solid #ebe6df;
+    padding: 1.25rem;
+
+    dt {
+        color: $secondary;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    dd {
+        color: $primary;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+}
+
+.booking-success {
+    text-align: center;
+    padding: 2rem 1rem;
+
+    &__icon {
+        width: 4rem;
+        height: 4rem;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #d8f3dc, #b7e4c7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+    }
+
+    h5 {
+        font-weight: 700;
+        color: $primary;
+    }
+}
+
+// Admin polish
+.admin-page {
+    .card {
+        border: 1px solid rgba(15, 23, 32, 0.06);
+        box-shadow: $box-shadow-sm;
+        border-radius: $border-radius-lg;
+    }
+
+    .card-header {
+        background: #fff;
+        font-weight: 600;
+        border-bottom: 1px solid rgba(15, 23, 32, 0.06);
+    }
+
+    .table thead th {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: $secondary;
+        font-weight: 600;
+    }
+}
+
+// Admin modal
+.modal-content {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: $box-shadow-lg;
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(15, 23, 32, 0.06);
+}
+
+// Form polish
+.form-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: $primary;
+}
+
+.form-control,
+.form-select {
+    border-radius: $border-radius-sm;
+    padding: 0.65rem 0.85rem;
+    border-color: $input-border-color;
+
+    &:focus {
+        border-color: $input-focus-border-color;
+        box-shadow: $input-focus-box-shadow;
+    }
+}
+
+.btn-primary {
+    background: $primary;
+    border-color: $primary;
+    font-weight: 600;
+    padding: 0.6rem 1.25rem;
+    border-radius: $border-radius-sm;
+
+    &:hover {
+        background: darken($primary, 6%);
+        border-color: darken($primary, 6%);
+    }
+}
+
+.btn-success {
+    font-weight: 600;
+    border-radius: $border-radius-sm;
+}
