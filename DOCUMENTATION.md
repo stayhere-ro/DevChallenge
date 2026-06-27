@@ -1,5 +1,9 @@
 # Hairdresser Booking System - Project Documentation
 
+> **Note for reviewers:** This file describes the **original upstream baseline** (single-stylist demo).
+> For the full DevChallenge implementation (API, multi-stylist, Livewire, admin extensions, Docker, CI),
+> see **[SUBMISSION.md](SUBMISSION.md)** and **[README.md](README.md)**.
+
 ## Project Overview
 
 This is a Laravel-based hairdresser booking platform created for the DevChallenge. The application allows customers to book appointments online while providing the hairdresser with an admin dashboard to view all bookings.
