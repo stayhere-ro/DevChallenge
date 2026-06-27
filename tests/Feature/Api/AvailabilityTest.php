@@ -5,7 +5,6 @@ namespace Tests\Feature\Api;
 use App\Models\Booking;
 use App\Models\Hairdresser;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class AvailabilityTest extends TestCase
