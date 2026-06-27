@@ -24,7 +24,12 @@
                     <strong>{{ \Carbon\Carbon::parse($selectedDate)->format('l, M j') }}</strong>
                     at <strong>{{ $selectedHour }}</strong>.
                 </p>
-</div>
+                @if($embedded)
+                    <button type="button" class="btn btn-primary" wire:click="closeEmbedded">
+                        Close
+                    </button>
+                @endif
+            </div>
         @else
             @if($step === 1)
                 <div class="row g-3">
