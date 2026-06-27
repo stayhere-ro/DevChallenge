@@ -29,6 +29,7 @@ class BookingController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'scheduled_at' => $scheduledAt,
+            'hairdresser_id' => $data['hairdresser_id'],
         ]);
 
         return redirect()->route('bookings.index')

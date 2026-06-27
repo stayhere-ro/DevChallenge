@@ -13,6 +13,7 @@ class Booking extends Model
         'name',
         'email',
         'scheduled_at',
+        'hairdresser_id',
     ];
 
     protected $casts = [
@@ -33,5 +34,10 @@ class Booking extends Model
     public function getHourAttribute()
     {
         return $this->scheduled_at ? $this->scheduled_at->format('H:i') : null;
+    }
+
+    public function hairdresser()
+    {
+        return $this->belongsTo(User::class, 'hairdresser_id');
     }
 }
