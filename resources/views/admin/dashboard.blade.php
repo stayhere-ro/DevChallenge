@@ -6,7 +6,17 @@
         <div class="col-lg-11">
             <div class="mb-4">
                 <h1 class="h3 mb-1 fw-bold">Bookings dashboard</h1>
-                <p class="text-muted mb-0">Overview and exports</p>
+                <p class="text-muted mb-0">Manage stylists and exports</p>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">Stylists</div>
+                <div class="card-body">
+                    @livewire('admin.hairdresser-manager')
+                </div>
+            </div>
+
+            
             </div>
             <div class="card mb-4">
                 <div class="card-header">Export bookings (CSV)</div>
