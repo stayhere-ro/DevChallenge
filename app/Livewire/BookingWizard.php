@@ -14,6 +14,8 @@ use Livewire\Component;
 
 class BookingWizard extends Component
 {
+    public bool $embedded = false;
+
     public int $step = 1;
 
     public string $name = '';
@@ -35,10 +37,30 @@ class BookingWizard extends Component
 
     public bool $bookingComplete = false;
 
-    public function mount(): void
+    public function mount(bool $embedded = false): void
     {
+        $this->embedded = $embedded;
         $this->hairdresserId = Hairdresser::active()->orderBy('id')->value('id');
         $this->setWeekContaining(now());
+    }
+
+    #[On('reset-wizard')]
+    public function resetWizard(): void
+    {
+        $this->reset([
+            'step', 'name', 'email', 'selectedDate', 'selectedHour',
+            'availableSlots', 'bookingComplete',
+        ]);
+        $this->hairdresserId = Hairdresser::active()->orderBy('id')->value('id');
+        $this->setWeekContaining(now());
+    }
+
+    #[On('stylist-created')]
+    public function refreshDefaultStylist(): void
+    {
+        if (! $this->hairdresserId || ! Hairdresser::active()->whereKey($this->hairdresserId)->exists()) {
+            $this->hairdresserId = Hairdresser::active()->orderBy('id')->value('id');
+        }
     }
 
     public function nextStep(): void
@@ -146,6 +168,18 @@ class BookingWizard extends Component
         $this->bookingComplete = true;
         $this->step = 4;
 
+        if (! $this->embedded) {
+            $this->dispatch('booking-created');
+        }
+    }
+
+    public function closeEmbedded(): void
+    {
+        if (! $this->embedded) {
+            return;
+        }
+
+        $this->dispatch('booking-created');
     }
 
     public function render()
