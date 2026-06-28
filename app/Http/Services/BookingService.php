@@ -11,4 +11,9 @@ class BookingService implements BookingServiceInterface
     {
         Booking::create($reservation);
     }
+
+    public function getListBy(string $email): array
+    {
+        return Booking::where('email', $email)->get()->toArray();
+    }
 }

@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Api;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Validator;
-use App\Http\Traits\BookingValidation;
+use App\Rules\CheckWeekend;
+use App\Rules\CheckBusinessHours;
+use App\Rules\CheckHairdresserAndScheduledHours;
 
-class BookingApiRequest extends FormRequest
+class StoreBookingRequest extends FormRequest
 {
-    use BookingValidation;
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -28,17 +27,19 @@ class BookingApiRequest extends FormRequest
         return [
             'hairdresser_id' => 'required|numeric|max_digits:10|exists:hairdressers,id',
             'email' => 'required|email|max:255',
-            'date' => 'required|date|after_or_equal:today',
-            'hour' => 'required|date_format:H:i',
+            'date' => [
+                'required',
+                'date',
+                'after_or_equal:today',
+                new CheckWeekend(),
+            ],
+            'hour' => [
+                'required',
+                'date_format:H:i',
+                new CheckBusinessHours(),
+                new CheckHairdresserAndScheduledHours($this->hairdresser_id, $this->date),
+            ],
         ];
-    }
-
-    /**
-     * Configure the validator instance.
-     */
-    public function withValidator(Validator $validator): void
-    {
-        $this->validateBookingBusinessRules($validator);
     }
 
     /**

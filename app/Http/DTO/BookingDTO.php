@@ -7,7 +7,7 @@ use Carbon\Carbon;
 class BookingDTO
 {
     public function __construct(
-        public readonly int $hairdresser_id,
+        public readonly ?int $hairdresser_id,
         public readonly string $name,
         public readonly string $email,
         public readonly string $date,
@@ -17,7 +17,7 @@ class BookingDTO
     public static function self(array $data): self
     {
         return new self(
-            hairdresser_id: $data['hairdresser_id'],
+            hairdresser_id: $data['hairdresser_id'] ?? null,
             name: $data['name'] ?? '',
             email: $data['email'],
             date: $data['date'],

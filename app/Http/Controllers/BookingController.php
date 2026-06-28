@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Booking;
 use App\Http\Requests\BookingRequest;
-use Carbon\Carbon;
+use App\Http\DTO\BookingDTO;
+use App\Http\Interfaces\BookingServiceInterface;
+use App\Helpers\HttpResponse;
 
 class BookingController extends Controller
 {
@@ -19,19 +20,16 @@ class BookingController extends Controller
     /**
      * Store a new booking.
      */
-    public function store(BookingRequest $request)
+    public function store(BookingRequest $request, BookingServiceInterface $bookingService)
     {
-        $data = $request->validated();
+        $reservation = BookingDTO::self($request->validated())->toArray();
+        try {
+            $bookingService->insert($reservation);
 
-        $scheduledAt = Carbon::parse($data['date'] . ' ' . $data['hour'] . ':00');
-
-        Booking::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'scheduled_at' => $scheduledAt,
-        ]);
-
-        return redirect()->route('bookings.index')
+            return redirect()->route('bookings.index')
             ->with('success', 'Booking confirmed! We look forward to seeing you.');
+        } catch (\Exception $e) {
+            return HttpResponse::simpleResponse(500, 'Failed to create booking. Please try again later.');
+        }
     }
 }

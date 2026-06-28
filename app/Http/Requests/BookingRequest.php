@@ -3,9 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Validator;
-use App\Models\Booking;
-use Carbon\Carbon;
+use App\Rules\CheckWeekend;
+use App\Rules\CheckBusinessHours;
+use App\Rules\CheckHairdresserAndScheduledHours;
 
 class BookingRequest extends FormRequest
 {
@@ -27,42 +27,19 @@ class BookingRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'date' => 'required|date|after_or_equal:today',
-            'hour' => 'required|date_format:H:i',
+            'date' => [
+                'required',
+                'date',
+                'after_or_equal:today',
+                new CheckWeekend(),
+            ],
+            'hour' => [
+                'required',
+                'date_format:H:i',
+                new CheckBusinessHours(),
+                new CheckHairdresserAndScheduledHours(date:$this->date),
+            ],
         ];
-    }
-
-    /**
-     * Configure the validator instance.
-     */
-    public function withValidator(Validator $validator): void
-    {
-        $validator->after(function ($validator) {
-            $date = $this->input('date');
-            $hour = $this->input('hour');
-
-            if ($date && $hour) {
-                // Check if weekend
-                $carbonDate = Carbon::parse($date);
-                if ($carbonDate->isWeekend()) {
-                    $validator->errors()->add('date', 'Bookings are not available on weekends.');
-                }
-
-                // Check business hours (8:00 AM - 5:00 PM)
-                $hourTime = Carbon::createFromFormat('H:i', $hour);
-                if ($hourTime->hour < 8 || $hourTime->hour >= 17) {
-                    $validator->errors()->add('hour', 'Bookings are only available between 8:00 AM and 5:00 PM.');
-                }
-
-                // Combine into scheduled_at and check if the time slot is already booked
-                $scheduledAt = Carbon::parse($date . ' ' . $hour . ':00');
-                $exists = Booking::where('scheduled_at', $scheduledAt)->exists();
-
-                if ($exists) {
-                    $validator->errors()->add('hour', 'This time slot is already booked. Please choose another time.');
-                }
-            }
-        });
     }
 
     /**

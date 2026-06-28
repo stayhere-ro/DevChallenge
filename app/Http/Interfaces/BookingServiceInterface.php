@@ -5,4 +5,6 @@ namespace App\Http\Interfaces;
 interface BookingServiceInterface
 {
     public function insert(array $reservation);
+
+    public function getListBy(string $email): array;
 }
