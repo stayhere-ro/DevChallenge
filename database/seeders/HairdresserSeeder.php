@@ -15,7 +15,7 @@ class HairdresserSeeder extends Seeder
     {
         $hairdressers = [
             ['name' => 'Hairdresser Admin', 'email' => 'hairdresser@example.com'],
-            ['name' => 'Emma Carter', 'email' => 'levente.simon@example.com'],
+            ['name' => 'Levente Simon', 'email' => 'levente.simon@example.com'],
             ['name' => 'László Bedő', 'email' => 'laszlo.bedo@example.com'],
         ];
 
