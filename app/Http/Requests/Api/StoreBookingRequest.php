@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Api;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\CheckWeekend;
 use App\Rules\CheckBusinessHours;
 use App\Rules\CheckHairdresserAndScheduledHours;
 
-class BookingRequest extends FormRequest
+class StoreBookingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class BookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'hairdresser_id' => 'required|numeric|max_digits:10|exists:hairdressers,id',
             'email' => 'required|email|max:255',
             'date' => [
                 'required',
@@ -37,7 +37,7 @@ class BookingRequest extends FormRequest
                 'required',
                 'date_format:H:i',
                 new CheckBusinessHours(),
-                new CheckHairdresserAndScheduledHours(date:$this->date),
+                new CheckHairdresserAndScheduledHours($this->hairdresser_id, $this->date),
             ],
         ];
     }
@@ -48,7 +48,9 @@ class BookingRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Please enter your name.',
+            'hairdresser_id.required' => 'Please select a hairdresser.',
+            'hairdresser_id.exists' => 'This hairdresser is not available.',
+            'hairdresser_id.max_digits' => 'Please select a valid hairdresser.',
             'email.required' => 'Please enter your email address.',
             'email.email' => 'Please enter a valid email address.',
             'date.required' => 'Please select a date.',
