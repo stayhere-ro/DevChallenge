@@ -48,3 +48,6 @@ I started the task with reading a few websites about Artisan commands. i realize
 have commands in the package-lock.json but i didn't used it for getting data from the database.
 
 I used the `php artisan make:command ListBookings` command and added the logic to get the data and make the table.
+
+I tested the command in the terminal, then i wrote 2 tests to test the command. The 2 tests check if the command works correctly if there are bookings,
+or there are no bookings in the database.
