@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookingRequest;
 use App\Models\Booking;
+use App\Services\BookingNotificationService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 
@@ -13,7 +14,7 @@ class BookingController extends Controller
      /**
      * Store a new booking from the public API.
      */
-    public function store(BookingRequest $request): JsonResponse
+    public function store(BookingRequest $request, BookingNotificationService $notifications): JsonResponse
     {
         $data = $request->validated();
 
@@ -24,6 +25,8 @@ class BookingController extends Controller
                 'hairdresser_id' => $data['hairdresser_id'],
                 'scheduled_at' => $request->scheduledAt(),
             ]);
+
+            $notifications->sendForBooking($booking);
         } catch (QueryException $exception) {
             return response()->json([
                 'message' => 'The booking could not be created because this time slot may already be booked for the selected hairdresser.',

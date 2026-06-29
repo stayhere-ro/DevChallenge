@@ -51,3 +51,37 @@ I used the `php artisan make:command ListBookings` command and added the logic t
 
 I tested the command in the terminal, then i wrote 2 tests to test the command. The 2 tests check if the command works correctly if there are bookings,
 or there are no bookings in the database.
+
+### 3. Email notifications.
+
+A few weeks ago I solved the same task using spring boot and I am curious how can i implement it using php.
+When i was solving this task I checked the possible ways to send emails. I was using MailHog but now I saw that MailPit is in the .env
+so I will use that
+If you want real mails change the data in the .env.
+When I did it I used a free gamil account. Which allows 500 mails/day. You have to create a new mail account enable 2 factor auth and
+then you can get the 16 digit password.
+
+`docker run --rm -p 1025:1025 -p 8025:8025 axllent/mailpit`
+I use this command to run the MailPit in docker
+
+a `.env beallitas`
+MAIL_MAILER=smtp
+MAIL_HOST=127.0.0.1
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="freshHaircut@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+I used this to create the files
+
+`artisan make:mail ClientBookingConfirmation`
+`artisan make:mail HairdresserNewBookingNotification`
+
+I implemented the task and I noticed that right now I will have the same code in the Api BookingController and in the
+other BookingController. So this is why i need to look for a solution because i don't want to have code duplication.
+
+To solve this I created a service `BookingNotificationService` and then i call it from both controllers.
+
+i tested manually and i noticed that if the mail service is not available i get an error so i will solve this too.
