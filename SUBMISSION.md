@@ -40,6 +40,8 @@ When i am creating a new booking I am checking if already exists a booking with 
 Database level
 I added a constraint into the database so two rows are not allowed with the same hairdresser_id and same time.
 
+To test it you need a datbase then you run the code. you can eather test it fro mthe frontend or with postman
+
 ### 2. Artisan command
 
 I choose this task because with other backend technologies I didn't use this type of things and I was curious hhow can i implement it.
@@ -51,6 +53,8 @@ I used the `php artisan make:command ListBookings` command and added the logic t
 
 I tested the command in the terminal, then i wrote 2 tests to test the command. The 2 tests check if the command works correctly if there are bookings,
 or there are no bookings in the database.
+
+run the database and use the command
 
 ### 3. Email notifications.
 
@@ -86,6 +90,8 @@ To solve this I created a service `BookingNotificationService` and then i call i
 
 i tested manually and i noticed that if the mail service is not available i get an error so i will solve this too.
 
+Run the docker mailpit and create a booking
+
 ### 4. CI- Github Actions.
 
 Continuous Integration with Github Actions
@@ -101,6 +107,8 @@ Then i used this command `./vendor/bin/phpstan.bat analyse --memory-limit=1G` i 
 the defaul 128Mb was not enough.
 I created the github CI file which will set up the php enviroment in the cloud it will run a database and it will run 3 tests.
 The tests written by me, pint tests and the larastan tests.
+
+at push you can see in the github actions tab the tests
 
 ### 5. Concurrency-safe bookings
 
