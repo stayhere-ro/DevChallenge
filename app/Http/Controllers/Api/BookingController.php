@@ -21,6 +21,22 @@ class BookingController extends Controller
             $data['date'] . ' ' . $data['start_time'] . ':00'
         );
 
+        $exists = Booking::where('hairdresser_id', $data['hairdresser_id'])
+            ->where('scheduled_at', $scheduledAt)
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The selected time slot is already booked.',
+                'errors' => [
+                    'start_time' => [
+                        'The selected time slot is already booked.',
+                    ],
+                ],
+            ], 409);
+        }
+
         try {
             $booking = Booking::create([
                 'name' => $data['client_email'],
