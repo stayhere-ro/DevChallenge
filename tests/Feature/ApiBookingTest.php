@@ -82,4 +82,55 @@ class ApiBookingTest extends TestCase
 
         $this->assertSame(2, Booking::count());
     }
+
+    public function test_it_returns_consistent_validation_error_for_invalid_email(): void
+    {
+        $response = $this->postJson('/api/bookings', [
+            'client_email' => 'invalid-email',
+            'hairdresser_id' => 1,
+            'date' => '2026-07-01',
+            'start_time' => '10:00',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'message' => 'Validation failed.',
+            ])
+            ->assertJsonValidationErrors(['client_email']);
+    }
+
+    public function test_it_returns_consistent_validation_error_for_weekend_booking(): void
+    {
+        $response = $this->postJson('/api/bookings', [
+            'client_email' => 'client@example.com',
+            'hairdresser_id' => 1,
+            'date' => '2026-07-04',
+            'start_time' => '10:00',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'message' => 'Validation failed.',
+            ])
+            ->assertJsonValidationErrors(['date']);
+    }
+
+    public function test_it_returns_consistent_validation_error_for_non_full_hour_slot(): void
+    {
+        $response = $this->postJson('/api/bookings', [
+            'client_email' => 'client@example.com',
+            'hairdresser_id' => 1,
+            'date' => '2026-07-01',
+            'start_time' => '10:30',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'message' => 'Validation failed.',
+            ])
+            ->assertJsonValidationErrors(['start_time']);
+    }
 }
