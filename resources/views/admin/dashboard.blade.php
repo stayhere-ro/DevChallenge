@@ -7,9 +7,14 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Hairdresser Dashboard - Bookings</h4>
-                    <a href="{{ route('bookings.index') }}" class="btn btn-sm btn-outline-primary">
-                        New Booking
-                    </a>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exportBookingsModal">
+                            Export
+                        </button>
+                        <a href="{{ route('bookings.index') }}" class="btn btn-sm btn-outline-primary">
+                            New Booking
+                        </a>
+                    </div>
                 </div>
 
                 <div class="card-body">
@@ -74,5 +79,39 @@
         </div>
     </div>
 </div>
-@endsection
 
+<div class="modal fade" id="exportBookingsModal" tabindex="-1" aria-labelledby="exportBookingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" method="GET" action="{{ route('admin.bookings.export') }}">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportBookingsModalLabel">Export Bookings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="export_from" class="form-label">From</label>
+                    <input type="date"
+                           class="form-control"
+                           id="export_from"
+                           name="from"
+                           value="{{ now()->subWeek()->toDateString() }}"
+                           required>
+                </div>
+                <div class="mb-3">
+                    <label for="export_to" class="form-label">To</label>
+                    <input type="date"
+                           class="form-control"
+                           id="export_to"
+                           name="to"
+                           value="{{ now()->toDateString() }}"
+                           required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Export CSV</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection

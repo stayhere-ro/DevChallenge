@@ -29,6 +29,7 @@ class BookingRequest extends FormRequest
             'email' => 'required|email|max:255',
             'date' => 'required|date|after_or_equal:today',
             'hour' => 'required|date_format:H:i',
+            'hairdresser_id' => 'required|exists:users,id',
         ];
     }
 
@@ -40,6 +41,7 @@ class BookingRequest extends FormRequest
         $validator->after(function ($validator) {
             $date = $this->input('date');
             $hour = $this->input('hour');
+            $hairdresserId = $this->input('hairdresser_id');
 
             if ($date && $hour) {
                 // Check if weekend
@@ -56,11 +58,7 @@ class BookingRequest extends FormRequest
 
                 // Combine into scheduled_at and check if the time slot is already booked
                 $scheduledAt = Carbon::parse($date . ' ' . $hour . ':00');
-                $exists = Booking::where('scheduled_at', $scheduledAt)->exists();
-
-                if ($exists) {
-                    $validator->errors()->add('hour', 'This time slot is already booked. Please choose another time.');
-                }
+                
             }
         });
     }
@@ -78,6 +76,8 @@ class BookingRequest extends FormRequest
             'date.after_or_equal' => 'Please select a date from today onwards.',
             'hour.required' => 'Please select a time.',
             'hour.date_format' => 'Please select a valid time in HH:MM format.',
+            'hairdresser_id.required' => 'Please select a hairdresser.',
+            'hairdresser_id.exists' => 'Please select a valid hairdresser.',
         ];
     }
 }

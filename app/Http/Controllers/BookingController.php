@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\User;
 use App\Http\Requests\BookingRequest;
 use Carbon\Carbon;
 
@@ -13,7 +14,10 @@ class BookingController extends Controller
      */
     public function index()
     {
-        return view('bookings.index');
+        $users = User::all();
+        $bookings = Booking::all();
+
+        return view('bookings.index', compact('bookings', 'users'));
     }
 
     /**
@@ -29,6 +33,7 @@ class BookingController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'scheduled_at' => $scheduledAt,
+            'hairdresser_id' => $data['hairdresser_id'],
         ]);
 
         return redirect()->route('bookings.index')
