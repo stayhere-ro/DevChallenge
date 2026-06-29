@@ -2,62 +2,33 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\DTOs\CreateBookingData;
+use App\Exceptions\SlotAlreadyBookedException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreBookingRequest;
-use App\Models\Booking;
-use Carbon\Carbon;
-use Illuminate\Database\QueryException;
+use App\Services\BookingService;
 
 class BookingController extends Controller
 {
     /**
      * Store a new booking through the API.
      */
-    public function store(StoreBookingRequest $request)
+    public function store(StoreBookingRequest $request, BookingService $bookingService)
     {
-        $data = $request->validated();
-
-        $scheduledAt = Carbon::parse(
-            $data['date'] . ' ' . $data['start_time'] . ':00'
-        );
-
-        $exists = Booking::where('hairdresser_id', $data['hairdresser_id'])
-            ->where('scheduled_at', $scheduledAt)
-            ->exists();
-
-        if ($exists) {
+        try {
+            $booking = $bookingService->create(
+                CreateBookingData::fromApiPayload($request->validated())
+            );
+        } catch (SlotAlreadyBookedException $exception) {
             return response()->json([
                 'success' => false,
-                'message' => 'The selected time slot is already booked.',
+                'message' => $exception->getMessage(),
                 'errors' => [
                     'start_time' => [
-                        'The selected time slot is already booked.',
+                        $exception->getMessage(),
                     ],
                 ],
             ], 409);
-        }
-
-        try {
-            $booking = Booking::create([
-                'name' => $data['client_email'],
-                'email' => $data['client_email'],
-                'hairdresser_id' => $data['hairdresser_id'],
-                'scheduled_at' => $scheduledAt,
-            ]);
-        } catch (QueryException $exception) {
-            if ($exception->getCode() === '23000') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'The selected time slot is already booked.',
-                    'errors' => [
-                        'start_time' => [
-                            'The selected time slot is already booked.',
-                        ],
-                    ],
-                ], 409);
-            }
-
-            throw $exception;
         }
 
         return response()->json([
