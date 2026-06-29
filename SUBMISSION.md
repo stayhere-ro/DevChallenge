@@ -23,3 +23,7 @@ I selected mostly UI-focused tasks that improve the core booking experience, mak
 ## Assumptions and trade-offs
 
 Bookings are one-hour slots during business hours. Multiple hairdressers can have bookings at the same time, but the same hairdresser cannot be double-booked for the same `scheduled_at`. The booking UI uses client-side filtering for a smoother experience, but validation and database uniqueness are still the final protection. CSV export is streamed directly instead of generating stored files.
+
+## Run, test, and verify
+
+To run the app locally: install dependencies with `composer install` and `npm install`, configure `.env`, run `php artisan migrate --seed`, then start the app with `php artisan serve` and build the frontend with `npm run build`. To test and verify: run `php artisan test`.
