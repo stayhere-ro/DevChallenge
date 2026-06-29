@@ -25,6 +25,26 @@
                         @csrf
 
                         <div class="mb-3">
+                            <label for="hairdresser_id" class="form-label">Hairdresser <span class="text-danger">*</span></label>
+                            <select class="form-select @error('hairdresser_id') is-invalid @enderror"
+                                    id="hairdresser_id"
+                                    name="hairdresser_id"
+                                    required>
+                                <option value="">Select a hairdresser</option>
+                                @foreach($hairdressers as $hairdresser)
+                                    <option value="{{ $hairdresser->id }}" {{ old('hairdresser_id') == $hairdresser->id ? 'selected' : '' }}>
+                                        {{ $hairdresser->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('hairdresser_id')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
                             <input type="text"
                                    class="form-control @error('name') is-invalid @enderror"
@@ -99,7 +119,7 @@
                         </div>
 
                         <div class="alert alert-info">
-                            <strong>Note:</strong> Only one booking per hour is allowed. Please select an available time slot.
+                            <strong>Note:</strong> Each hairdresser can only accept one booking per hour. Please select an available time slot.
                         </div>
 
                         <div class="d-grid">
@@ -122,4 +142,3 @@
     </div>
 </div>
 @endsection
-

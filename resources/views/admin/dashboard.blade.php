@@ -25,6 +25,7 @@
                                         <th>ID</th>
                                         <th>Client Name</th>
                                         <th>Email</th>
+                                        <th>Hairdresser</th>
                                         <th>Date</th>
                                         <th>Time</th>
                                         <th>Booked At</th>
@@ -40,6 +41,7 @@
                                             <td>
                                                 <a href="mailto:{{ $booking->email }}">{{ $booking->email }}</a>
                                             </td>
+                                            <td>{{ $booking->hairdresser?->name ?? 'Not assigned' }}</td>
                                             <td>
                                                 <span class="badge bg-primary">
                                                     {{ $booking->date->format('M d, Y') }}
@@ -75,4 +77,3 @@
     </div>
 </div>
 @endsection
-
